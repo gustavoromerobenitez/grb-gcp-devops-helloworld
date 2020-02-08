@@ -13,13 +13,17 @@
 # limitations under the License.
 
 # [START hello-app]
+import os
+
 from flask import Flask
-app = Flask('hello-cloudbuild')
+
+app = Flask(__name__)
 
 @app.route('/')
-def hello():
-  return "Hello World!\n"
+def hello_world():
+    target = os.environ.get('COMPANY', 'Company-Name-Not-Set!')
+    return 'Hello {0} from Gustavo Benitez!\n'.format(target)
 
-if __name__ == '__main__':
-  app.run(host = '0.0.0.0', port = 8080)
+if __name__ == "__main__":
+    app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 12333)))
 # [END hello-app]

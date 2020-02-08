@@ -10,8 +10,6 @@ COPY app.py ./
 # Install production dependencies.
 RUN pip install Flask gunicorn
 
-ENV PORT 12333
-
 EXPOSE $PORT
 
 # Run the web service on container startup. Here we use the gunicorn

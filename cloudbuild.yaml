@@ -21,6 +21,10 @@ steps:
   args:
   - -c
   - 'pip install flask && python test_app.py -v'
+  env:
+  - 'COMPANY=$_COMPANY'
+  - 'PORT=$_PORT'
+
 
 # This step builds the container image.
 - name: 'gcr.io/cloud-builders/docker'
@@ -28,15 +32,32 @@ steps:
   args:
   - 'build'
   - '-t'
-  - 'gcr.io/$PROJECT_ID/grb-gcp-devops-helloworld:$SHORT_SHA'
+  - 'gcr.io/$PROJECT_ID/$REPO_NAME:$_IMAGE_VERSION'
   - '.'
+  env:
+  - 'COMPANY=$_COMPANY'
+  - 'PORT=$_PORT'
 
-# This step pushes the image to Container Registry
-# The PROJECT_ID and SHORT_SHA variables are automatically
-# replaced by Cloud Build.
-- name: 'gcr.io/cloud-builders/docker'
-  id: Push
-  args:
-  - 'push'
-  - 'gcr.io/$PROJECT_ID/grb-gcp-devops-helloworld:$SHORT_SHA'
+#
+# Infrastructure build includes the image deployment to K8s
+# therefore it should wait for the above tasks to complete
+# use waitFor
+
+
+
+
+images:
+  - 'gcr.io/$PROJECT_ID/$REPO_NAME:$_IMAGE_VERSION' # Makes sure all images produced are pushed to Google Container Registry
+
+# Default User-defined Substitution values
+substitutions:
+    _COMPANY: LeonTeq # Default value
+    _PORT: 12333 # Default Value
+    _IMAGE_VERSION: '${SHORT_SHA}' # Default Value
+
+options:
+    substitution_option: 'ALLOW_LOOSE' #Allow the build to succeed despite missing substitution values
+    logging: GCS_ONLY # Disables Stackdriver logging and default to GCS only
+
+
 # [END cloudbuild]

@@ -1,42 +1,53 @@
 #
 #
 #
+substitutions:
+  _TERRAFORM_VERSION: '0.12.20'
+  _TERRAFORM_VERSION_SHA256SUM: '46bd906f8cb9bbb871905ecb23ae7344af8017d214d735fbb6d6c8e0feb20ff3'
 
 steps:
 
 # Terraform init
-- name: 'gcr.io/${PROJECT_ID}/terraform'
+- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args:
   - 'init'
+  - '-var-file="tfvars/${ENVIRONMENT}.tfvars"'
   - '-backend-config=project=${PROJECT_ID}'
   env:
   - "TF_VAR_project-name=${PROJECT_ID}"
+  - "TF_VAR_environment=${ENVIRONMENT}"
 
 # Terraform Plan -destroy
-- name: 'gcr.io/${PROJECT_ID}/terraform'
+- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args:
   - 'plan'
+  - '-var-file="tfvars/${ENVIRONMENT}.tfvars"'
   - '-destroy'
   - '-compact-warnings'
   - '-detailed-exitcode'
   - '-out plan.tfplan'
   env:
   - "TF_VAR_project-name=${PROJECT_ID}"
+  - "TF_VAR_environment=${ENVIRONMENT}"
 
 # Terraform Show
-- name: 'gcr.io/${PROJECT_ID}/terraform'
+- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args:
   - 'show'
+  - '-var-file="tfvars/${ENVIRONMENT}.tfvars"'
   - '-no-color'
   - 'plan.tfplan'
   - '> tf-plan-destroy-${PROJECT_ID}-${BUILD_ID}'
   env:
   - "TF_VAR_project-name=${PROJECT_ID}"
+  - "TF_VAR_environment=${ENVIRONMENT}"
 
 # Terraform destroy
-- name: 'gcr.io/${PROJECT_ID}/terraform'
+- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args:
   - 'destroy'
+  - '-var-file="tfvars/${ENVIRONMENT}.tfvars"'
   - '-auto-approve'
   env:
   - "TF_VAR_project-name=${PROJECT_ID}"
+  - "TF_VAR_environment=${ENVIRONMENT}"

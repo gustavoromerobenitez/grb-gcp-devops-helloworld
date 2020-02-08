@@ -7,7 +7,7 @@
 terraform
 {
   backend "gcs" {
-    bucket  = "grb-gcp-devops-terraform"
-    prefix  = "terraform/${PROJECT_ID}/state/"
+    bucket  = "${var.remote-state-bucket}"
+    prefix  = "${var.remote-state-prefix}"
   }
 }

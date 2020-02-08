@@ -16,10 +16,10 @@
 steps:
 # This step runs the unit tests on the app
 - name: 'python:3.7-slim'
-  id: Test
-  entrypoint: /bin/sh
+  id: 'Test'
+  entrypoint: '/bin/sh'
   args:
-  - -c
+  - '-c'
   - 'pip install flask && python test_app.py -v'
   env:
   - 'COMPANY=$_COMPANY'
@@ -28,7 +28,7 @@ steps:
 
 # This step builds the container image.
 - name: 'gcr.io/cloud-builders/docker'
-  id: Build
+  id: 'Build'
   args:
   - 'build'
   - '-t'
@@ -51,13 +51,13 @@ images:
 
 # Default User-defined Substitution values
 substitutions:
-    _COMPANY: LeonTeq # Default value
-    _PORT: 12333 # Default Value
+    _COMPANY: 'LeonTeq' # Default value
+    _PORT: '12333' # Default Value
     _IMAGE_VERSION: '${SHORT_SHA}' # Default Value
 
 options:
     substitution_option: 'ALLOW_LOOSE' #Allow the build to succeed despite missing substitution values
-    logging: GCS_ONLY # Disables Stackdriver logging and default to GCS only
+    logging: 'GCS_ONLY' # Disables Stackdriver logging and default to GCS only
 
 
 # [END cloudbuild]

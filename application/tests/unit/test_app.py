@@ -16,7 +16,7 @@ import unittest
 
 import os,sys,inspect
 unitdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-testsdir = os.path.dirname(currentdir)
+testsdir = os.path.dirname(unitdir)
 applicationdir = os.path.dirname(testsdir)
 sys.path.insert(0,applicationdir)
 

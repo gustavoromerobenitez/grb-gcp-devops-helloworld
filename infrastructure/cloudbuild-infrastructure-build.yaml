@@ -9,6 +9,7 @@ steps:
 
 # Terraform init
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'infrastructure'
   args:
   - 'init'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
@@ -17,8 +18,9 @@ steps:
   - "TF_VAR_project-common-name=${PROJECT_ID}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
 
-# Terraform Plan -destroy
+# Terraform Plan
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'infrastructure'
   args:
   - 'plan'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
@@ -31,6 +33,7 @@ steps:
 
 # Terraform Show
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'infrastructure'
   args:
   - 'show'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
@@ -41,8 +44,9 @@ steps:
   - "TF_VAR_project-common-name=${PROJECT_ID}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
 
-# Terraform destroy
+# Terraform Apply
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'infrastructure'
   args:
   - 'apply'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'

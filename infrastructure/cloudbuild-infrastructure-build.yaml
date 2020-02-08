@@ -11,42 +11,42 @@ steps:
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args:
   - 'init'
-  - '-var-file="tfvars/${ENVIRONMENT}.tfvars"'
+  - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
   - '-backend-config=project=${PROJECT_ID}'
   env:
   - "TF_VAR_project-common-name=${PROJECT_ID}"
-  - "TF_VAR_environment=${ENVIRONMENT}"
+  - "TF_VAR_environment=${_ENVIRONMENT}"
 
 # Terraform Plan -destroy
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args:
   - 'plan'
-  - '-var-file="tfvars/${ENVIRONMENT}.tfvars"'
+  - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
   - '-compact-warnings'
   - '-detailed-exitcode'
   - '-out plan.tfplan'
   env:
   - "TF_VAR_project-common-name=${PROJECT_ID}"
-  - "TF_VAR_environment=${ENVIRONMENT}"
+  - "TF_VAR_environment=${_ENVIRONMENT}"
 
 # Terraform Show
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args:
   - 'show'
-  - '-var-file="tfvars/${ENVIRONMENT}.tfvars"'
+  - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
   - '-no-color'
   - 'plan.tfplan'
   - '> tf-plan-${PROJECT_ID}-${BUILD_ID}'
   env:
   - "TF_VAR_project-common-name=${PROJECT_ID}"
-  - "TF_VAR_environment=${ENVIRONMENT}"
+  - "TF_VAR_environment=${_ENVIRONMENT}"
 
 # Terraform destroy
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   args:
   - 'apply'
-  - '-var-file="tfvars/${ENVIRONMENT}.tfvars"'
+  - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
   - '-auto-approve'
   env:
   - "TF_VAR_project-common-name=${PROJECT_ID}"
-  - "TF_VAR_environment=${ENVIRONMENT}"
+  - "TF_VAR_environment=${_ENVIRONMENT}"

@@ -1,0 +1,42 @@
+#
+#
+#
+
+steps:
+
+# Terraform init
+- name: 'gcr.io/${PROJECT_ID}/terraform'
+  args:
+  - 'init'
+  - '-backend-config=project=${PROJECT_ID}'
+  env:
+  - "TF_VAR_project-name=${PROJECT_ID}"
+
+# Terraform Plan -destroy
+- name: 'gcr.io/${PROJECT_ID}/terraform'
+  args:
+  - 'plan'
+  - '-destroy'
+  - '-compact-warnings'
+  - '-detailed-exitcode'
+  - '-out plan.tfplan'
+  env:
+  - "TF_VAR_project-name=${PROJECT_ID}"
+
+# Terraform Show
+- name: 'gcr.io/${PROJECT_ID}/terraform'
+  args:
+  - 'show'
+  - '-no-color'
+  - 'plan.tfplan'
+  - '> tf-plan-destroy-${PROJECT_ID}-${BUILD_ID}'
+  env:
+  - "TF_VAR_project-name=${PROJECT_ID}"
+
+# Terraform destroy
+- name: 'gcr.io/${PROJECT_ID}/terraform'
+  args:
+  - 'destroy'
+  - '-auto-approve'
+  env:
+  - "TF_VAR_project-name=${PROJECT_ID}"

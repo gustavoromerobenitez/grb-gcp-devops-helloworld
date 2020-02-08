@@ -1,11 +1,3 @@
-terraform
-{
-  backend "gcs" {
-    bucket  = "grb-gcp-devops-terraform"
-    prefix  = "terraform/grb-gcp-devops-leonteq-terraform/state/"
-  }
-}
-
 provider "google" {
   project = "grb-gcp-devops-leonteq-terraform"
   version = "2.19.0"

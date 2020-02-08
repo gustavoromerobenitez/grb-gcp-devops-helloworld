@@ -24,7 +24,7 @@ steps:
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
   - '-compact-warnings'
   - '-detailed-exitcode'
-  - '-out plan.tfplan'
+  - '-out=plan.tfplan'
   env:
   - "TF_VAR_project-common-name=${PROJECT_ID}"
   - "TF_VAR_environment=${_ENVIRONMENT}"

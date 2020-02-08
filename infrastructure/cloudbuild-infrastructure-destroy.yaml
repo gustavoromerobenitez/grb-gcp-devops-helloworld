@@ -25,7 +25,7 @@ steps:
   - '-destroy'
   - '-compact-warnings'
   - '-detailed-exitcode'
-  - '-out plan.tfplan'
+  - '-out=plan.tfplan'
   env:
   - "TF_VAR_project-name=${PROJECT_ID}"
   - "TF_VAR_environment=${_ENVIRONMENT}"

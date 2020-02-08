@@ -13,7 +13,13 @@
 # limitations under the License.
 
 import unittest
-import os
+
+import os,sys,inspect
+unitdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+testsdir = os.path.dirname(currentdir)
+applicationdir = os.path.dirname(testsdir)
+sys.path.insert(0,applicationdir)
+
 from app import hello_world
 
 class TestHelloApp(unittest.TestCase):

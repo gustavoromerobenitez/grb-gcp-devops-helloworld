@@ -16,7 +16,7 @@ steps:
 
 # Build a Terraform-Builder container image which uses the specified Terraform binary version
 - name: 'gcr.io/cloud-builders/gcloud'
-  dir: 'terraform'
+  dir: 'cloud-builders-community/terraform'
   args:
   - 'builds'
   - 'submit'

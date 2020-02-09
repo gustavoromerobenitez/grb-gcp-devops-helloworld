@@ -33,7 +33,6 @@ steps:
   - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-compact-warnings'
-  - '-detailed-exitcode'
   - '-out=plan.tfplan'
   env:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"

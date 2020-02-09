@@ -34,7 +34,6 @@ data "terraform_remote_state" "current-project" {
 #  #client_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_certificate)"
 #  #client_key = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_key)"
 #  #cluster_ca_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)"
-#
 #}
 
 data "google_client_config" "default" {}
@@ -158,6 +157,18 @@ resource "google_project_iam_member" "automation-project-owner" {
   depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
 }
 
+
+data "google_compute_default_service_account" "default-compute-sa" {
+  project = local.project-name
+}
+
+resource "google_project_iam_member" "storage-object-viewer" {
+  project = grb-gcp-devops
+  role = "roles/storage.objectViewer"
+  member = google_compute_default_service_account.default-compute-sa.email
+  provisioner "local-exec" { command = "sleep 10" }
+  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_compute_default_service_account.default-compute-sa, google_project_service.compute-googleapis-com ]
+}
 
 
 

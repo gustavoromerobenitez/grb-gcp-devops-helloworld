@@ -7,7 +7,7 @@ substitutions:
   _PROJECT_BASE_NAME: 'grb-gcp-devops-k8s-poc'
   _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
 
-
+timeout: '1200s'
 steps:
 
 # Terraform init

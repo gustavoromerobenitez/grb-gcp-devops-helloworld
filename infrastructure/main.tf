@@ -50,12 +50,12 @@ resource "google_project" "current-project" {
 }
 
 
-resource "google_project_iam_binding" "project_owner" {
+resource "google_project_iam_binding" "project-owner" {
   project = local.project-name
   role = "roles/owner"
   members = [ "serviceAccount:${var.project-service-account-name}@${local.project-name}.iam.gserviceaccount.com" ]
   provisioner "local-exec" { command = "sleep 10" }
-  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_project_service.iam-googleapis-com]
+  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
 }
 
 
@@ -107,7 +107,7 @@ resource "google_service_account" "project-service-account" {
   account_id = var.project-service-account-name
   display_name = var.project-service-account-name
   provisioner "local-exec" {  command = "sleep 10" }
-  depends_on = [ google_project_iam_binding.project_owner, google_project.current-project ]
+  depends_on = [ google_project_iam_binding.project-owner, google_project.current-project ]
 }
 
 
@@ -170,7 +170,7 @@ resource "google_container_cluster" "container-cluster" {
    password = ""
    # Cient Certificate is considered a Legacy Authorisation method
    # Disable to avoid errors like: User \"client\" cannot create namespaces/secrets ...
-   client_certificate_config = {
+   client_certificate_config {
      issue_client_certificate = "false"
    }
   }
@@ -196,7 +196,7 @@ resource "google_container_cluster" "container-cluster" {
      }
    }# node pool
 
-  depends_on = [ google_project.current-project, google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-compute-subnetwork]
+  depends_on = [ google_project.current-project, google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-subnetwork]
 }
 
 

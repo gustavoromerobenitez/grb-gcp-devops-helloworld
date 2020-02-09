@@ -26,7 +26,7 @@ output "google_container_cluster_container-cluster_name" {
   value = google_container_cluster.container-cluster.name
 }
 
-output "google_container_cluster_container-cluster_endpoint" {
+output "google_container_cluster_container-cluster_master_version" {
   value = google_container_cluster.container-cluster.master_version
 }
 

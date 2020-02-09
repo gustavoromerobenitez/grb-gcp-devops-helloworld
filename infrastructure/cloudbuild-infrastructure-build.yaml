@@ -7,9 +7,15 @@ substitutions:
   _PROJECT_BASE_NAME: 'grb-gcp-devops-helloworld'
   _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
 
-      
+
 steps:
 
+# Terraform Validate
+- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'infrastructure'
+  args:
+  - 'validate'
+    
 # Terraform init
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'infrastructure'

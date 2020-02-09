@@ -146,9 +146,9 @@ resource "google_service_account" "project-service-account" {
 
 
 
-resource "google_compute_subnetwork" "compute-subnetwork" {
+resource "google_compute_subnetwork" "k8s-subnetwork-name" {
 
-    name = var.compute-subnetwork-name
+    name = var.container-cluster-subnetwork-name
     ip_cidr_range = var.container-cluster-cidr-range
     network = "default"
     project = local.project-name

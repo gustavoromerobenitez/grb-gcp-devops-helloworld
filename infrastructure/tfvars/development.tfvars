@@ -1,11 +1,17 @@
+project-common-name = "grb-gcp-devops-helloworld"
+project-name = "${var.project-common-name}-${var.environment}"
 region = "europe-west2"
-zone = "europe-west2-a"
+zone = "${var.region}-a"
 google-provider-version = "3.7.0"
-
-# Useful for FinOps
-# SECRET Should be read from a secret's management solution
-# billing-account = ""
-
+billing-account = "0177D8-2B9095-D16093"
+remote-state-bucket = "grb-gcp-devops-terraform"
+remote-state-prefix = "terraform/${var.project-name}/state/"
+project-service-account-name = var.project-name
+cluster-node-machine-type = "n1-standard-1"
+cluster-max-node-count = "1"
+cluster-min-node-count = "1"
+cluster-initial-node-count = "1"
+cluster-node-disk-size-gb = "10"
 container-cluster-name = "${var.project-name}-k8s-cluster-1"
 container-cluster-cidr-range = "10.0.0.0/20"
 container-cluster-subnetwork-name = "${var.project-name}-k8s-subnetwork"

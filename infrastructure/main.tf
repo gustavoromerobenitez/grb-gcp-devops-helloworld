@@ -72,7 +72,7 @@ resource "google_project_service" "iam-googleapis-com" {
   service = "iam.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
-  depends_on = [ "google_project.${var.project-name}" ]
+  depends_on = [ google_project.current-project ]
 }
 
 
@@ -81,7 +81,7 @@ resource "google_project_service" "storage-api-googleapis-com" {
   service = "storage-api.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
-  depends_on = [ "google_project.${var.project-name}" ]
+  depends_on = [ google_project.current-project ]
 }
 
 resource "google_project_service" "container-googleapis-com" {
@@ -89,7 +89,7 @@ resource "google_project_service" "container-googleapis-com" {
   service = "container.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
-  depends_on = [ "google_project.${var.project-name}" ]
+  depends_on = [ google_project.current-project ]
 }
 
 resource "google_project_service" "containerregistry-googleapis-com" {
@@ -97,7 +97,7 @@ resource "google_project_service" "containerregistry-googleapis-com" {
   service = "containerregistry.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
-  depends_on = [ "google_project.${var.project-name}" ]
+  depends_on = [ google_project.current-project ]
 }
 
 resource "google_project_service" "compute-googleapis-com" {
@@ -105,7 +105,7 @@ resource "google_project_service" "compute-googleapis-com" {
   service = "compute.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
-  depends_on = [ "google_project.${var.project-name}" ]
+  depends_on = [ google_project.current-project ]
 }
 
 
@@ -113,7 +113,7 @@ resource "google_service_account" "project-service-account" {
   account_id = var.project-service-account-name
   display_name = var.project-service-account-name
   provisioner "local-exec" {  command = "sleep 10" }
-  depends_on = [ google_project_iam_binding.project_owner, "google_project.${var.project-name}" ]
+  depends_on = [ google_project_iam_binding.project_owner, google_project.current-project ]
 }
 
 
@@ -130,7 +130,7 @@ resource "google_service_account" "project-service-account" {
 #    environment = var.environment
 #    terraform = "true"
 #  }
-#  depends_on = [ "google_project.${var.project-name}", google_project_service.iam-googleapis-com, google_project_service.storage-api-googleapis-com]
+#  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_project_service.storage-api-googleapis-com]
 #}
 
 

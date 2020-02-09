@@ -13,7 +13,6 @@ steps:
   args:
   - 'init'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
-  - '-backend-config=project=${PROJECT_ID}-${_ENVIRONMENT}'
   - '-backend-config=bucket=${_BACKEND_BUCKET}'
   - '-backend-config=prefix=${_BACKEND_PREFIX}'
   env:

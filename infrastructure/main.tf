@@ -4,6 +4,10 @@ locals {
 }
 
 
+# Variables are not allwed in the provider declaration
+# which prevents this file from being fully parameterized.
+#
+# This file should be templated to avoid the limitations imposed by Terraform
 provider "google" {
   version = "~> 3.7"
   region  = "europe-west2"
@@ -47,7 +51,7 @@ resource "google_project" "current-project" {
 
 
 resource "google_project_iam_binding" "project_owner" {
-  project = var.project-name
+  project = local.project-name
   role = "roles/owner"
   members = [ "serviceAccount:${var.project-service-account-name}@${local.project-name}.iam.gserviceaccount.com" ]
   provisioner "local-exec" { command = "sleep 10" }
@@ -147,7 +151,7 @@ resource "google_compute_subnetwork" "compute-subnetwork" {
     name = var.compute-subnetwork-name
     ip_cidr_range = var.container-cluster-cidr-range
     network = "default"
-    project = var.project-name
+    project = local.project-name
     description = "Kubernetes Container Cluster Subnetwork for Pods and Services"
     enable_flow_logs = "false"
     private_ip_google_access = "false"

@@ -13,7 +13,7 @@ steps:
   dir: 'infrastructure'
   args:
   - 'init'
-  - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
+  - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-backend-config=bucket=${_BACKEND_BUCKET}'
   - '-backend-config=prefix=${_BACKEND_PREFIX}'
   env:
@@ -25,7 +25,7 @@ steps:
   dir: 'infrastructure'
   args:
   - 'plan'
-  - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
+  - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-compact-warnings'
   - '-detailed-exitcode'
   - '-out=plan.tfplan'
@@ -38,7 +38,7 @@ steps:
   dir: 'infrastructure'
   args:
   - 'show'
-  - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
+  - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-no-color'
   - 'plan.tfplan'
   - '> tf-plan-${PROJECT_ID}-${BUILD_ID}'
@@ -51,7 +51,7 @@ steps:
   dir: 'infrastructure'
   args:
   - 'apply'
-  - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
+  - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-auto-approve'
   env:
   - "TF_VAR_project-common-name=${PROJECT_ID}"

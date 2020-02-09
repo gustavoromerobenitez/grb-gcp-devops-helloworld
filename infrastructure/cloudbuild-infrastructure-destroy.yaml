@@ -4,8 +4,10 @@
 substitutions:
   _TERRAFORM_VERSION: '0.12.20'
   _TERRAFORM_VERSION_SHA256SUM: '46bd906f8cb9bbb871905ecb23ae7344af8017d214d735fbb6d6c8e0feb20ff3'
-  _PROJECT_BASE_NAME: 'grb-gcp-devops-helloworld'
+  _PROJECT_BASE_NAME: 'grb-gcp-devops-k8s-poc'
   _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
+
+
 steps:
 
 # Terraform init
@@ -21,6 +23,7 @@ steps:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
   - "TF_IN_AUTOMATION=true"
+
 
 # Terraform Plan
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
@@ -65,3 +68,9 @@ steps:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
   - "TF_IN_AUTOMATION=true"
+
+
+artifacts:
+  objects:
+    location: 'gs://${_BACKEND_BUCKET}/terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/artifacts/'
+    paths: ['tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}']

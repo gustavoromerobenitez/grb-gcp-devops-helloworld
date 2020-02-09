@@ -39,10 +39,10 @@ data "terraform_remote_state" "current-project" {
 
 data "google_client_config" "default" {}
 
-data "google_container_cluster" "container-cluster" {
-  name = "container-cluster"
-  location = var.region
-}
+#data "google_container_cluster" "container-cluster" {
+#  name = "container-cluster"
+#  location = var.region
+#}
 
 provider "kubernetes" {
   load_config_file = false

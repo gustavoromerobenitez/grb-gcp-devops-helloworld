@@ -47,7 +47,7 @@ steps:
   - 'show'
   - '-no-color'
   - 'plan.tfplan'
-  - '> tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}'
+  - '> tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}.txt'
   env:
   - "TF_IN_AUTOMATION=true"
 
@@ -68,4 +68,4 @@ steps:
 artifacts:
   objects:
     location: 'gs://${_BACKEND_BUCKET}/terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/artifacts/'
-    paths: ['tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}']
+    paths: ['infrastructure/tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}.txt']

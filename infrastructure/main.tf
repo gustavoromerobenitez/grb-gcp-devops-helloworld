@@ -38,19 +38,19 @@ data "terraform_remote_state" "current-project" {
 
 data "google_client_config" "default" {}
 
-#data "google_container_cluster" "container-cluster" {
-#  name = "container-cluster"
-#  location = var.region
-#}
+data "google_container_cluster" "container-cluster" {
+  name = "container-cluster"
+  location = var.region
+}
 
 provider "kubernetes" {
   load_config_file = false
-  host = google_container_cluster.container-cluster.endpoint
+  host = data.google_container_cluster.container-cluster.endpoint
   token = data.google_client_config.default.access_token
 
-  client_certificate = base64decode(google_container_cluster.container-cluster.master_auth[0].client_certificate)
-  client_key = base64decode(google_container_cluster.container-cluster.master_auth[0].client_key)
-  cluster_ca_certificate = base64decode(google_container_cluster.container-cluster.master_auth[0].cluster_ca_certificate)
+  client_certificate = base64decode(data.google_container_cluster.container-cluster.master_auth[0].client_certificate)
+  client_key = base64decode(data.google_container_cluster.container-cluster.master_auth[0].client_key)
+  cluster_ca_certificate = base64decode(data.google_container_cluster.container-cluster.master_auth[0].cluster_ca_certificate)
 }
 
 

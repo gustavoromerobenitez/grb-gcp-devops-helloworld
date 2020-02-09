@@ -314,27 +314,6 @@ resource "google_dns_record_set" "dns-cname-record-set" {
 
 
 
-
-#########################################################
-#
-# Kubernetes Namespace
-#
-#########################################################
-resource "kubernetes_namespace" "k8s-namespace" {
-  metadata {
-    annotations = {
-      name = "k8s-namespace-${var.environment}"
-    }
-
-    labels = {
-      terraform = "true"
-    }
-
-    name = "k8s-namespace"
-  }
-}
-
-
 #########################################################
 #
 # Kubernetes Deployment
@@ -345,7 +324,6 @@ resource "kubernetes_deployment" "k8s-deployment" {
 
   metadata {
     name = "k8s-deployment"
-    namespace = "k8s-namespace"
     labels = {
       app = var.application-name
       terraform = "true"
@@ -411,7 +389,7 @@ resource "kubernetes_deployment" "k8s-deployment" {
     }# template
   }#spec
 
-  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_namespace.k8s-namespace, kubernetes_service_account.k8s-service-account ]
+  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_service_account.k8s-service-account ]
 }
 
 
@@ -426,7 +404,6 @@ resource "kubernetes_deployment" "k8s-deployment" {
 resource "kubernetes_service" "k8s-service" {
   metadata {
     name = "k8s-service"
-    namespace = "k8s-namespace"
   }
   spec {
     selector = {
@@ -460,7 +437,6 @@ resource "kubernetes_service" "k8s-service" {
 resource "kubernetes_ingress" "k8s-ingress" {
   metadata {
     name = "k8s-ingress"
-    namespace = "k8s-namespace"
   }
 
   spec {
@@ -499,7 +475,6 @@ resource "kubernetes_ingress" "k8s-ingress" {
 resource "kubernetes_service_account" "k8s-service-account" {
   metadata {
     name = "k8s-service-account"
-    namespace = "k8s-namespace"
   }
 
   automount_service_account_token = "true"
@@ -510,7 +485,6 @@ resource "kubernetes_service_account" "k8s-service-account" {
 resource "kubernetes_role_binding" "k8s-role-binding" {
   metadata {
     name      = "k8s-role-binding"
-    namespace = "k8s-namespace"
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -520,10 +494,9 @@ resource "kubernetes_role_binding" "k8s-role-binding" {
   subject {
     kind      = "ServiceAccount"
     name      = "k8s-service-account"
-    namespace = "k8s-namespace"
   }
 
-  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_namespace.k8s-namespace ]
+  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster ]
 }
 
 

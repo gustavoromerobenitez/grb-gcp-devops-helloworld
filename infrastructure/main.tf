@@ -42,6 +42,8 @@ data "google_container_cluster" "container-cluster" {
   project = local.project-name
   name = "container-cluster"
   location = var.region
+
+  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster ]
 }
 
 #provider "kubernetes" {

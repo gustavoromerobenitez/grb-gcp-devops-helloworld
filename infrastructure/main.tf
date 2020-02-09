@@ -29,11 +29,11 @@ data "terraform_remote_state" "current-project" {
 
 provider "kubernetes" {
   version = "~> 1.10"
-  host = "data.terraform_remote_state.current-project.google_container_cluster_container-cluster_endpoint"
+  host = data.terraform_remote_state.current-project.google_container_cluster_container-cluster_endpoint
   insecure = "false"
-  client_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_certificate)"
-  client_key = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_key)"
-  cluster_ca_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)"
+  client_certificate = base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_certificate)
+  client_key = base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_key)
+  cluster_ca_certificate = base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)
 }
 
 

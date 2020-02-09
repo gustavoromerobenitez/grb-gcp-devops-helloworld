@@ -3,11 +3,15 @@ locals {
   state-bucket-prefix="${var.remote-state-prefix}/${var.environment}/"
 }
 
-
+###############################################################################
+#
+# Providers
+#
 # Neither Variables nor Local references are allwed in the provider declaration
 # which prevents this file from being fully parameterized.
 #
 # This file should be templated to avoid the limitations imposed by Terraform
+###############################################################################
 provider "google" {
   version = "~> 3.7"
   region  = "europe-west2"
@@ -50,25 +54,11 @@ resource "google_project" "current-project" {
   provisioner "local-exec" { command = "sleep 60"  }
 }
 
-
-resource "google_project_iam_member" "project-owner" {
-  project = local.project-name
-  role = "roles/owner"
-  member = "serviceAccount:${var.project-service-account-name}@${local.project-name}.iam.gserviceaccount.com"
-  provisioner "local-exec" { command = "sleep 10" }
-  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
-}
-
-resource "google_project_iam_member" "automation-project-owner" {
-  project = local.project-name
-  role = "roles/owner"
-  member = "serviceAccount:${var.automation-service-account}"
-  provisioner "local-exec" { command = "sleep 10" }
-  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
-}
-
-
-
+#########################################################
+#
+# Google APIs
+#
+#########################################################
 resource "google_project_service" "iam-googleapis-com" {
   project = local.project-name
   service = "iam.googleapis.com"
@@ -111,16 +101,44 @@ resource "google_project_service" "compute-googleapis-com" {
 }
 
 
+
+#########################################################
+#
+# Service Accounts and Permissions
+#
+#########################################################
 resource "google_service_account" "project-service-account" {
   project = local.project-name
   account_id = var.project-service-account-name
   display_name = var.project-service-account-name
   provisioner "local-exec" {  command = "sleep 10" }
-  depends_on = [ google_project_iam_member.project-owner, google_project.current-project ]
+  depends_on = [ google_project.current-project ]
+}
+
+resource "google_project_iam_member" "project-owner" {
+  project = local.project-name
+  role = "roles/owner"
+  member = "serviceAccount:${var.project-service-account-name}@${local.project-name}.iam.gserviceaccount.com"
+  provisioner "local-exec" { command = "sleep 10" }
+  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
+}
+
+resource "google_project_iam_member" "automation-project-owner" {
+  project = local.project-name
+  role = "roles/owner"
+  member = "serviceAccount:${var.automation-service-account}"
+  provisioner "local-exec" { command = "sleep 10" }
+  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
 }
 
 
 
+
+#########################################################
+#
+# Network
+#
+#########################################################
 resource "google_compute_subnetwork" "k8s-subnetwork" {
 
     name = var.container-cluster-subnetwork-name
@@ -145,7 +163,11 @@ resource "google_compute_subnetwork" "k8s-subnetwork" {
 
 
 
-
+#########################################################
+#
+# Container Cluster
+#
+#########################################################
 
 resource "google_container_cluster" "container-cluster" {
 

@@ -1,3 +1,4 @@
 *.exe
 *.tfplan
 **/.terraform/**
+*.tfstate

@@ -5,3 +5,5 @@ README.md
 *.pyd
 __pycache__
 terraform.exe
+**/.terraform/**
+*.tfstate

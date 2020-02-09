@@ -12,6 +12,7 @@ provider "google" {
   version = "~> 3.7"
   region  = "europe-west2"
   zone  = "europe-west2-a"
+  # enable_batching = "false"
 }
 
 #provider "kubernetes" {
@@ -50,18 +51,18 @@ resource "google_project" "current-project" {
 }
 
 
-resource "google_project_iam_binding" "project-owner" {
+resource "google_project_iam_member" "project-owner" {
   project = local.project-name
   role = "roles/owner"
-  members = [ "serviceAccount:${var.project-service-account-name}@${local.project-name}.iam.gserviceaccount.com" ]
+  member = "serviceAccount:${var.project-service-account-name}@${local.project-name}.iam.gserviceaccount.com"
   provisioner "local-exec" { command = "sleep 10" }
   depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
 }
 
-resource "google_project_iam_binding" "automation-project-owner" {
+resource "google_project_iam_member" "automation-project-owner" {
   project = local.project-name
   role = "roles/owner"
-  members = [ "serviceAccount:${var.automation-service-account}" ]
+  member = "serviceAccount:${var.automation-service-account}"
   provisioner "local-exec" { command = "sleep 10" }
   depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
 }
@@ -187,6 +188,7 @@ resource "google_container_cluster" "container-cluster" {
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   name = "default"
+  project = local.project-name
   cluster = google_container_cluster.container-cluster.name
   initial_node_count = var.cluster-initial-node-count
 

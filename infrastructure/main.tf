@@ -39,6 +39,7 @@ data "terraform_remote_state" "current-project" {
 data "google_client_config" "default" {}
 
 data "google_container_cluster" "container-cluster" {
+  project = local.project-name
   name = "container-cluster"
   location = var.region
 }

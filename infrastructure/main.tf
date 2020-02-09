@@ -165,7 +165,7 @@ data "google_compute_default_service_account" "default-compute-sa" {
 resource "google_project_iam_member" "storage-object-viewer" {
   project = "grb-gcp-devops"
   role = "roles/storage.objectViewer"
-  member = google_compute_default_service_account.default-compute-sa.email
+  member = data.google_compute_default_service_account.default-compute-sa.email
   provisioner "local-exec" { command = "sleep 10" }
   depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_compute_default_service_account.default-compute-sa, google_project_service.compute-googleapis-com ]
 }

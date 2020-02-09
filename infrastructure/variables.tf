@@ -23,7 +23,7 @@ variable "region" {
 
 variable "zone" {
   type = string
-  default = "var.region-a"
+  default = "${var.region}-a"
   description = "The GCP zone for the compute resources"
 }
 
@@ -48,13 +48,13 @@ variable "remote-state-bucket" {
 
 variable "remote-state-prefix" {
   type = string
-  default = "terraform/var.project-name/state/"
+  default = "terraform/${var.project-name}/state/"
   description = "The path to the state file within the State Bucket"
 }
 
 variable "project-service-account-name" {
   type = string
-  default = "var.project-name"
+  default = var.project-name
   description = "The short name for the project's default service account, not to be confused with the compute default service account"
 }
 
@@ -65,19 +65,19 @@ variable "container-cluster-cidr-range" {
 
 variable "container-cluster-name" {
   type = string
-  default = "var.project-name-k8s-cluster-1"
+  default = "${var.project-name}-k8s-cluster-1"
   description = "The GCP Container Cluster name, that is the Managed Compute Instance group that will support the Kubernetes cluster"
 }
 
 variable "container-cluster-subnetwork-name" {
   type = string
-  default = "var.project-name-k8s-subnetwork"
+  default = "${var.project-name}-k8s-subnetwork"
   description = "The subnetwork that the Container Cluster will be attached to"
 }
 
 variable "container-cluster-pods-secondary-range-name" {
   type = string
-  default = "var.project-name-k8s-pods-secondary-range"
+  default = "${var.project-name}-k8s-pods-secondary-range"
   description = "The name of the Secondary IP Range that will be used to provide IP addresses to the Pods in the Kubernetes Cluster"
 }
 
@@ -88,7 +88,7 @@ variable "container-cluster-pods-secondary-range-cidr" {
 
 variable "container-cluster-services-secondary-range-name" {
   type = string
-  default = "var.project-name-k8s-services-secondary-range"
+  default = "${var.project-name}-k8s-services-secondary-range"
   description = "The name of the Secondary IP Range that will be used to provide IP addresses to the Services in the Kubernetes Cluster"
 }
 

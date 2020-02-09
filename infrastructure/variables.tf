@@ -1,6 +1,5 @@
 variable "project-base-name" {
   type    = string
-  default = "grb-gcp-devops-helloworld"
   description = "GCP Project Common Name without the environment suffix"
 }
 
@@ -31,6 +30,11 @@ variable "billing-account" {
   type = string
   default = "0177D8-2B9095-D16093" # SECRET Should be read from a bucket
   description = "The GCP Billing Account this project will be linked to"
+}
+
+variable "automation-service-account" {
+  type    = string
+  description = "The service account used by the atuomation"
 }
 
 variable "remote-state-bucket" {

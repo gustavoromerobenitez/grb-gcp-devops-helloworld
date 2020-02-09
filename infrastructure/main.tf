@@ -58,6 +58,14 @@ resource "google_project_iam_binding" "project-owner" {
   depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
 }
 
+resource "google_project_iam_binding" "automation-project-owner" {
+  project = local.project-name
+  role = "roles/owner"
+  members = [ "serviceAccount:${var.automation-service-account}" ]
+  provisioner "local-exec" { command = "sleep 10" }
+  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com]
+}
+
 
 
 resource "google_project_service" "iam-googleapis-com" {

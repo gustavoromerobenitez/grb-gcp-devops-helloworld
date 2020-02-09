@@ -163,7 +163,7 @@ data "google_compute_default_service_account" "default-compute-sa" {
 }
 
 resource "google_project_iam_member" "storage-object-viewer" {
-  project = grb-gcp-devops
+  project = "grb-gcp-devops"
   role = "roles/storage.objectViewer"
   member = google_compute_default_service_account.default-compute-sa.email
   provisioner "local-exec" { command = "sleep 10" }

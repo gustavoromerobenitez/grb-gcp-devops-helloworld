@@ -1,11 +1,12 @@
 locals {
   project-name="${var.project-base-name}-${var.environment}"
   state-bucket-prefix="${var.remote-state-prefix}/${var.environment}/"
+  google-provider-version="${var.google-provider-version}"
 }
 
 
 provider "google" {
-  version = var.google-provider-version
+  version = local.google-provider-version
   project = local.project-name
   region  = var.region
 }

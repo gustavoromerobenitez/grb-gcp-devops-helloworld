@@ -161,6 +161,8 @@ resource "google_project_iam_member" "automation-project-owner" {
 
 data "google_compute_default_service_account" "default-compute-sa" {
   project = local.project-name
+
+  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_project_service.compute-googleapis-com]
 }
 
 resource "google_project_iam_member" "storage-object-viewer" {

@@ -293,7 +293,7 @@ resource "google_dns_managed_zone" "dns-zone" {
 
 resource "google_dns_record_set" "dns-a-record-set" {
   project = local.project-name
-  name = "${google_dns_managed_zone.dns-zone.dns_name}"
+  name = google_dns_managed_zone.dns-zone.dns_name
   managed_zone = google_dns_managed_zone.dns-zone.name
   type = "A"
   ttl = "300"

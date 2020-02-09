@@ -369,6 +369,9 @@ resource "kubernetes_deployment" "k8s-deployment" {
       }
 
       spec {
+
+        service_account_name = "k8s-service-account"
+
         container {
           image = var.application-container-image
           name  = var.application-name
@@ -408,7 +411,7 @@ resource "kubernetes_deployment" "k8s-deployment" {
     }# template
   }#spec
 
-  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster ]
+  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_namespace.k8s-namespace, kubernetes_service_account.k8s-service-account ]
 }
 
 
@@ -493,47 +496,35 @@ resource "kubernetes_ingress" "k8s-ingress" {
 
 
 
+resource "kubernetes_service_account" "k8s-service-account" {
+  metadata {
+    name = "k8s-service-account"
+    namespace = "k8s-namespace"
+  }
 
-# OPTIONAL
-#
-# kubernetes_cluster_role_binding:
-#   - provider: kubernetes
-#     resource_types:
-#       - resource_type: cluster_role_binding
-#         resources:
-#           - terraform_resource_name: "{{ KUBERNETES_SERVICE_ACCOUNT_NAME }}-binding"
-#             metadata:
-#               name: "{{ KUBERNETES_SERVICE_ACCOUNT_NAME }}-binding"
-#             role_refs:
-#               - kind: "ClusterRole"
-#                 name: "cluster-admin"
-#             subjects:
-#               - kind: "ServiceAccount"
-#                 name: "{{ KUBERNETES_SERVICE_ACCOUNT_NAME }}"
-#                 namespace: "{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#             depends_on:
-#               - "kubernetes_namespace.{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#
-#
-#
-#
-# kubernetes_service_account:
-#   - provider: kubernetes
-#     resource_types:
-#       - resource_type: service_account
-#         resources:
-#           - name: "{{ KUBERNETES_SERVICE_ACCOUNT_NAME }}"
-#             metadata:
-#               name: "{{ KUBERNETES_SERVICE_ACCOUNT_NAME }}"
-#               namespace: "{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#             automount_service_account_token: true
-#             depends_on:
-#               - "kubernetes_namespace.{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#
-#
-#
+  automount_service_account_token = "true"
+}
 
 
+
+resource "kubernetes_role_binding" "k8s-role-binding" {
+  metadata {
+    name      = "k8s-role-binding"
+    namespace = "k8s-namespace"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "k8s-service-account"
+    namespace = "k8s-namespace"
+  }
+
+  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_namespace.k8s-namespace ]
+}
 
 
 #

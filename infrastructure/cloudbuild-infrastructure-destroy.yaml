@@ -21,6 +21,7 @@ steps:
 
 # Terraform Plan -destroy
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'infrastructure'
   args:
   - 'plan'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
@@ -34,6 +35,7 @@ steps:
 
 # Terraform Show
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'infrastructure'
   args:
   - 'show'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
@@ -46,6 +48,7 @@ steps:
 
 # Terraform destroy
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'infrastructure'
   args:
   - 'destroy'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'

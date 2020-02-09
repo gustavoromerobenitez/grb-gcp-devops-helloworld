@@ -4,7 +4,7 @@ locals {
 }
 
 
-# Variables are not allwed in the provider declaration
+# Neither Variables nor Local references are allwed in the provider declaration
 # which prevents this file from being fully parameterized.
 #
 # This file should be templated to avoid the limitations imposed by Terraform
@@ -60,23 +60,6 @@ resource "google_project_iam_binding" "project_owner" {
 
 
 
-#resource "google_project_iam_custom_role" "BigQueryRO" {
-#  role_id = "BigQueryRO"
-#  title = "BigQuery RO"
-#  permissions = [ "bigquery.datasets.get", "bigquery.datasets.getIamPolicy", "bigquery.tables.get", "bigquery.tables.getData", "bigquery.tables.list", "resourcemanager.projects.get" ]
-#
-#  description = "BigQuery Data Viewer role without export"
-#
-#
-#  provisioner "local-exec" {
-#    command = "sleep 10"
-#  }
-#
-#  depends_on = [google_project.current-project, google_project_service.compute-googleapis-com, google_project_service.oslogin-googleapis-com, google_project_service.logging-googleapis-com, google_project_service.monitoring-googleapis-com, google_project_service.iam-googleapis-com, google_project_service.bigquery-json-googleapis-com, google_project_service.sourcerepo-googleapis-com, google_project_service.cloudkms-googleapis-com, google_project_service.storage-api-googleapis-com, #google_project_service.iamcredentials-googleapis-com, google_project_service.cloudresourcemanager-googleapis-com, google_project_service.datacatalog-googleapis-com, google_project_service.bigquerystorage-googleapis-com, google_project_service.pubsub-googleapis-com]
-#}
-
-
-
 resource "google_project_service" "iam-googleapis-com" {
   project = local.project-name
   service = "iam.googleapis.com"
@@ -129,31 +112,13 @@ resource "google_service_account" "project-service-account" {
 
 
 
-
-
-#resource "google_storage_bucket" "bucket-name" {
-#  project = local.project-name
-#  name =
-#  location = var.region
-#  storage_class = "REGIONAL"
-#  labels = {
-#    region= var.region
-#    environment = var.environment
-#    terraform = "true"
-#  }
-#  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_project_service.storage-api-googleapis-com]
-#}
-
-
-
-resource "google_compute_subnetwork" "k8s-subnetwork-name" {
+resource "google_compute_subnetwork" "k8s-subnetwork" {
 
     name = var.container-cluster-subnetwork-name
     ip_cidr_range = var.container-cluster-cidr-range
     network = "default"
     project = local.project-name
     description = "Kubernetes Container Cluster Subnetwork for Pods and Services"
-    enable_flow_logs = "false"
     private_ip_google_access = "false"
     secondary_ip_range = [
       {
@@ -177,64 +142,61 @@ resource "google_container_cluster" "container-cluster" {
 
   project = local.project-name
 
-   name = var.container-cluster-name
+  name = var.container-cluster-name
 
-   network = "default"
+  network = "default"
 
-   subnetwork = var.container-cluster-subnetwork-name
+  subnetwork = var.container-cluster-subnetwork-name
 
-   ip_allocation_policy = {
-     cluster_secondary_range_name = var.container-cluster-pods-secondary-range-name
-     cluster_ipv4_cidr_block = var.container-cluster-pods-secondary-range-cidr
-     services_secondary_range_name = var.container-cluster-services-secondary-range-name
-     services_ipv4_cidr_block = var.container-cluster-services-secondary-range-cidr
-     create_subnetwork = "false"
+  ip_allocation_policy {
+   cluster_secondary_range_name = var.container-cluster-pods-secondary-range-name
+   cluster_ipv4_cidr_block = var.container-cluster-pods-secondary-range-cidr
+   services_secondary_range_name = var.container-cluster-services-secondary-range-name
+   services_ipv4_cidr_block = var.container-cluster-services-secondary-range-cidr
+   create_subnetwork = "false"
+  }
+
+  zone = var.zone
+
+  maintenance_policy {
+   daily_maintenance_window {
+     start_time = "01:00"
    }
+  }
 
-   zone = var.zone
+  master_auth {
+   # Leave username and password blank to disable Basic Authentication
+   username = ""
+   password = ""
+   # Cient Certificate is considered a Legacy Authorisation method
+   # Disable to avoid errors like: User \"client\" cannot create namespaces/secrets ...
+   client_certificate_config = {
+     issue_client_certificate = "false"
+   }
+  }
 
-   maintenance_policy = {
-     daily_maintenance_window = {
-       start_time = "01:00"
+  node_pool {
+     name = "default"
+     initial_node_count = var.cluster-initial-node-count
+
+     node_config {
+       disk_size_gb = var.cluster-node-disk-size-gb
+       machine_type = var.cluster-node-machine-type
+       oauth_scopes = [ "https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring" ]
      }
-   }
 
-   master_auth =  {
-     # Leave username and password blank to disable Basic Authentication
-     username = ""
-     password = ""
-     # Cient Certificate is considered a Legacy Authorisation method
-     # Disable to avoid errors like: User \"client\" cannot create namespaces/secrets ...
-     client_certificate_config = {
-       issue_client_certificate = "false"
+     autoscaling {
+        max_node_count = var.cluster-max-node-count
+        min_node_count = var.cluster-min-node-count
      }
-   }
 
-   node_pools = [
-     {
-       name = "default"
-       initial_node_count = var.cluster-initial-node-count
+     management {
+       auto_upgrade = "true"
+       auto_repair = "true"
+     }
+   }# node pool
 
-       node_config = {
-         disk_size_gb = var.cluster-node-disk-size-gb
-         machine_type = var.cluster-node-machine-type
-         oauth_scopes = [ "https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring" ]
-       }
-
-       autoscaling = {
-          max_node_count = var.cluster-max-node-count
-          min_node_count = var.cluster-min-node-count
-       }
-
-       management = {
-         auto_upgrade = "true"
-         auto_repair = "true"
-       }
-     }# node pool
-   ]
-
-   outputs = [ "master_auth.0.client_certificate", "master_auth.0.client_key", "master_auth.0.cluster_ca_certificate", "endpoint", "name", "master_version" ]
-   depends_on = [ google_compute_subnetwork.compute-subnetwork]
+  depends_on = [ google_project.current-project, google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-compute-subnetwork]
 }
 
 

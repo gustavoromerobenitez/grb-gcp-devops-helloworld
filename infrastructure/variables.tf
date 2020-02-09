@@ -37,6 +37,24 @@ variable "automation-service-account" {
   description = "The service account used by the atuomation"
 }
 
+
+variable "application-container-image" {
+  type    = string
+  description = "The full path in the Google Container registry to the container image that contains the application"
+}
+
+variable "container-port" {
+  type    = string
+  description = "The port that the application is listening on within the container"
+}
+
+variable "application-name" {
+  type    = string
+  description = "Friendly name for the application"
+}
+
+
+
 variable "remote-state-bucket" {
   type = string
   default = "grb-gcp-devops-terraform"

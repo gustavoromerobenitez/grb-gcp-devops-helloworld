@@ -66,8 +66,9 @@ steps:
   - "TF_VAR_environment=${_ENVIRONMENT}"
   - "TF_IN_AUTOMATION=true"
 
-
-artifacts:
-  objects:
-    location: 'gs://${_BACKEND_BUCKET}/terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/artifacts/'
-    paths: ['infrastructure/tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}.txt']
+# Does not seem to be able to find the output plain text plan file
+# regardless of the path
+#artifacts:
+#  objects:
+#    location: 'gs://${_BACKEND_BUCKET}/terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/artifacts/'
+#    paths: ['infrastructure/tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}.txt']

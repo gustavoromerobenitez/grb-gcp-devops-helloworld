@@ -19,15 +19,17 @@ provider "google" {
   # enable_batching = "false"
 }
 
-#provider "kubernetes" {
-#
-#  host = "data.terraform_remote_state.${local.project-name}.google_container_cluster_var.container-cluster-name_endpoint"
-#  insecure = "false"
-#  client_certificate = "base64decode(data.terraform_remote_state.${local.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_client_certificate)"
-#  client_key = "base64decode(data.terraform_remote_state.${local.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_client_key)"
-#  cluster_ca_certificate = "base64decode(data.terraform_remote_state.${local.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_cluster_ca_certificate)"
-#
-#}
+provider "kubernetes" {
+  version = "~> 1.10"
+  region  = "europe-west2"
+  zone  = "europe-west2-a"
+  host = "data.terraform_remote_state.current-project.google_container_cluster_container-cluster_endpoint"
+  insecure = "false"
+  client_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_certificate)"
+  client_key = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_key)"
+  cluster_ca_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)"
+
+}
 
 
 data "terraform_remote_state" "current-project" {
@@ -291,85 +293,186 @@ resource "google_dns_record_set" "dns-record-set" {
 
 
 
+#########################################################
+#
+# Kubernetes Namespace
+#
+#########################################################
+resource "kubernetes_namespace" "k8s-namespace" {
+  metadata {
+    annotations = {
+      name = "k8s-namespace-${var.environment}"
+    }
+
+    labels = {
+      terraform = "true"
+    }
+
+    name = "k8s-namespace"
+  }
+}
+
 
 #########################################################
 #
-# Kubernetes (Service, Deployment, Service Account)
+# Kubernetes Deployment
 #
 #########################################################
-# kubernetes_service:
-#   - provider: kubernetes
-#     resource_types:
-#     - resource_type: service
-#       resources:
+
+resource "kubernetes_deployment" "k8s-deployment" {
+
+  metadata {
+    name = "k8s-deployment"
+    namespace = "k8s-namespace"
+    labels = {
+      app = "${var.application-name}"
+      terraform = "true"
+    }
+  }
+
+  spec {
+    replicas = 3
+
+    selector {
+      match_labels = {
+        app = "${var.application-name}"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "${var.application-name}"
+        }
+      }
+
+      spec {
+        container {
+          image = "${var.application-container-image}"
+          name  = "${var.application-name}"
+
+          port {
+            name = "http-port"
+            container_port = "${var.container-port}"
+          }
+
+          resources {
+            limits {
+              cpu    = "0.5"
+              memory = "512Mi"
+            }
+            requests {
+              cpu    = "250m"
+              memory = "50Mi"
+            }
+          }
+
+          liveness_probe {
+            http_get {
+              path = "/"
+              port = "${var.container-port}"
+
+              http_header {
+                name  = "X-Custom-Header"
+                value = "Awesome"
+              }
+            }
+
+            initial_delay_seconds = 3
+            period_seconds        = 3
+          }# Liveness probe
+        }# Container
+      }# spec
+    }# template
+  }#spec
+
+  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster ]
+}
+
+
+
+
+
+#########################################################
 #
-#         - name: "{{ KUBERNETES_JENKINS_UI_SERVICE_NAME }}"
-#           metadata:
-#             name: "{{ KUBERNETES_JENKINS_UI_SERVICE_NAME }}"
-#             namespace: "{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#             annotations:
-#               - name: "cloud.google.com/app-protocols"
-#                 value: "{ \\\"{{ KUBERNETES_JENKINS_UI_SERVICE_HTTPS_PORT_NAME }}\\\":\\\"HTTPS\\\" }"
-#           spec:
-#             type: NodePort
-#             cluster_ip: "{{ KUBERNETES_JENKINS_UI_SERVICE_CLUSTER_IP_ADDRESS }}"
-#             selector:
-#               - name: "app"
-#                 value: "jenkins-master-{{ JENKINS_IMAGE_VERSION | regex_replace('\\.', '-') }}"
-#             ports:
-#               - protocol: "TCP"
-#                 port: "{{ JENKINS_FRONTEND_PORT }}"
-#                 target_port: "{{ JENKINS_CONTAINER_HTTPS_PORT }}"
-#                 name: "{{ KUBERNETES_JENKINS_UI_SERVICE_HTTPS_PORT_NAME }}"
-#           depends_on:
-#             - "kubernetes_namespace.{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#             - "kubernetes_deployment.{{ KUBERNETES_DEPLOYMENT_NAME }}"
+# Kubernetes Service
 #
-#         - name: "{{ KUBERNETES_JENKINS_DISCOVERY_SERVICE_NAME }}"
-#           metadata:
-#             name: "{{ KUBERNETES_JENKINS_DISCOVERY_SERVICE_NAME }}"
-#             namespace: "{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#           spec:
-#             type: ClusterIP
-#             cluster_ip: "{{ KUBERNETES_JENKINS_DISCOVERY_SERVICE_CLUSTER_IP_ADDRESS }}"
-#             selector:
-#               - name: "app"
-#                 value: "jenkins-master-{{ JENKINS_IMAGE_VERSION | regex_replace('\\.', '-') }}"
-#             ports:
-#               - protocol: TCP
-#                 port: "{{ JENKINS_DISCOVERY_PORT }}"
-#                 target_port: "{{ JENKINS_DISCOVERY_PORT }}"
-#                 name: executors
-#             depends_on:
-#               - "kubernetes_namespace.{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#               - "kubernetes_deployment.{{ KUBERNETES_DEPLOYMENT_NAME }}"
-#               - "kubernetes_service.{{ KUBERNETES_JENKINS_UI_SERVICE_NAME }}"
+#########################################################
+resource "kubernetes_service" "k8s-service" {
+  metadata {
+    name = "k8s-service"
+    namespace = "k8s-namespace"
+  }
+  spec {
+    selector = {
+      app = "${kubernetes_deployment.k8s-deployment.metadata.0.labels.app}"
+    }
+    session_affinity = "ClientIP"
+
+    port {
+      port = "${var.container-port}"
+      target_port = 80
+    }
+
+    port {
+      port = "${var.container-port}"
+      target_port = 443
+    }
+
+    type = "NodePort"
+
+  }#spec
+
+  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_deployment.k8s-deployment ]
+}
+
+
+#########################################################
 #
+# Kubernetes Ingress
 #
-#
-# kubernetes_namespace:
-#   - provider: kubernetes
-#     resource_types:
-#       - resource_type: namespace
-#         resources:
-#
-#           - name: "{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#             metadata:
-#               annotations:
-#                 - name: "name"
-#                   value: "{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#               name: "{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#             outputs: []
-#
-#           - name: "{{ KUBERNETES_NAMESPACE_JENKINS_EXECUTOR }}"
-#             metadata:
-#               annotations:
-#                 - name: "name"
-#                   value: "{{ KUBERNETES_NAMESPACE_JENKINS_EXECUTOR }}"
-#               name: "{{ KUBERNETES_NAMESPACE_JENKINS_EXECUTOR }}"
-#             outputs: []
-#
-#
+#########################################################
+resource "kubernetes_ingress" "k8s-ingress" {
+  metadata {
+    name = "k8s-ingress"
+    namespace = "k8s-namespace"
+  }
+
+  spec {
+    backend {
+      service_name = "k8s-service"
+      service_port = "${var.container-port}"
+    }
+
+    rule {
+      http {
+        path {
+          backend {
+            service_name = "k8s-service"
+            service_port = "${var.container-port}"
+          }
+
+          path = "/*"
+        }
+      }
+    }
+
+    # TODO Generate a certificate and store it as a K8s secret
+    #tls {
+    #  secret_name = "tls-secret"
+    #}
+
+  }#spec
+
+  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_service.k8s-service ]
+
+}# Ingress
+
+
+
+
+
+# OPTIONAL
 #
 # kubernetes_cluster_role_binding:
 #   - provider: kubernetes
@@ -407,80 +510,6 @@ resource "google_dns_record_set" "dns-record-set" {
 #
 #
 #
-# kubernetes_deployment:
-#   - provider: kubernetes
-#     resource_types:
-#       - resource_type: deployment
-#         resources:
-#           - name: "{{ KUBERNETES_DEPLOYMENT_NAME }}"
-#             metadata:
-#               name: "{{ KUBERNETES_DEPLOYMENT_NAME }}"
-#               namespace: "{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#               labels:
-#                 - name: "app"
-#                   value: "jenkins-master-{{ JENKINS_IMAGE_VERSION | regex_replace('\\.', '-') }}"
-#             spec:
-#               replicas: 1
-#               min_ready_seconds: "120"
-#               selector:
-#                 match_labels:
-#                   - name: "app"
-#                     value: "jenkins-master-{{ JENKINS_IMAGE_VERSION | regex_replace('\\.', '-') }}"
-#               template:
-#                 metadata:
-#                   labels:
-#                     - name: "app"
-#                       value: "jenkins-master-{{ JENKINS_IMAGE_VERSION | regex_replace('\\.', '-') }}"
-#                 spec:
-#                   service_account_name: "{{ KUBERNETES_SERVICE_ACCOUNT_NAME }}"
-#                   volumes:
-#                     - name: "{{ KUBERNETES_SECRET_VOLUME_NAME }}"
-#                       secret:
-#                         secret_name: "{{ KUBERNETES_SERVICE_ACCOUNT_SECRET_NAME }}"
-#                         default_mode: "0444"
-#                     - name: "{{ KUBERNETES_PERSISTENT_VOLUME_NAME }}"
-#                       persistent_volume_claim:
-#                         claim_name: "{{ KUBERNETES_PERSISTENT_VOLUME_CLAIM_NAME }}"
-#                         read_only: "false"
-#                   containers:
-#                     - name: "jenkins-master-{{ JENKINS_IMAGE_VERSION | regex_replace('\\.', '-') }}"
-#                       image: "{{ JENKINS_MASTER_IMAGE_NAME }}"
-#                       volume_mounts:
-#                         - name: "{{ KUBERNETES_SECRET_VOLUME_NAME }}"
-#                           read_only: "true"
-#                           mount_path: "{{ KUBERNETES_SECRET_VOLUME_MOUNT_POINT }}"
-#                         - name: "{{ KUBERNETES_PERSISTENT_VOLUME_NAME }}"
-#                           read_only: "false"
-#                           mount_path: "{{ KUBERNETES_PERSISTENT_VOLUME_MOUNT_POINT }}"
-#                       ports:
-#                         - name: https-port
-#                           container_port: "{{ JENKINS_CONTAINER_HTTPS_PORT }}"
-#                         - name: executor-port
-#                           container_port: "{{ JENKINS_DISCOVERY_PORT }}"
-#                       readiness_probe:
-#                         http_get:
-#                           path: /login
-#                           port: "{{ JENKINS_CONTAINER_HTTPS_PORT }}"
-#                           scheme: HTTPS
-#                         initial_delay_seconds: 120
-#                         period_seconds: 30
-#                         timeout_seconds: 30
-#                         success_threshold: 2
-#                         failure_threshold: 10
-#                       resources:
-#                         limits:
-#                           cpu: 500m
-#                           memory: 1500Mi
-#                         requests:
-#                           cpu: 500m
-#                           memory: 1500Mi
-#             depends_on:
-#               - "google_storage_bucket_object.{{ JENKINS_CONFIG_BUCKET_OBJECT_NAME }}"
-#               - "kubernetes_service_account.{{ KUBERNETES_SERVICE_ACCOUNT_NAME }}"
-#               - "kubernetes_namespace.{{ KUBERNETES_NAMESPACE_JENKINS_MASTER }}"
-#               - "kubernetes_persistent_volume_claim.{{ KUBERNETES_PERSISTENT_VOLUME_CLAIM_NAME }}"
-#               - "kubernetes_storage_class.{{ KUBERNETES_STORAGE_CLASS_NAME }}"
-
 
 
 

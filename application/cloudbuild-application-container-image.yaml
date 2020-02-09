@@ -25,6 +25,7 @@ options:
 
 images:
   - 'gcr.io/$PROJECT_ID/$REPO_NAME:$_IMAGE_TAG' # Makes sure all images produced are pushed to Google Container Registry
+  - 'gcr.io/$PROJECT_ID/$REPO_NAME:latest' # Makes sure all images produced are pushed to Google Container Registry
 
 
 steps:

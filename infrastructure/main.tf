@@ -46,15 +46,15 @@ data "google_container_cluster" "container-cluster" {
   depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster ]
 }
 
-#provider "kubernetes" {
-#  load_config_file = false
-#  host = data.google_container_cluster.container-cluster.endpoint
-#  token = data.google_client_config.default.access_token
-#
-#  client_certificate = base64decode(data.google_container_cluster.container-cluster.master_auth[0].client_certificate)
-#  client_key = base64decode(data.google_container_cluster.container-cluster.master_auth[0].client_key)
-#  cluster_ca_certificate = base64decode(data.google_container_cluster.container-cluster.master_auth[0].cluster_ca_certificate)
-#}
+provider "kubernetes" {
+  load_config_file = false
+  host = data.google_container_cluster.container-cluster.endpoint
+  token = data.google_client_config.default.access_token
+
+  client_certificate = base64decode(data.google_container_cluster.container-cluster.master_auth[0].client_certificate)
+  client_key = base64decode(data.google_container_cluster.container-cluster.master_auth[0].client_key)
+  cluster_ca_certificate = base64decode(data.google_container_cluster.container-cluster.master_auth[0].cluster_ca_certificate)
+}
 
 
 

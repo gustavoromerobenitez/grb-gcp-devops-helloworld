@@ -19,15 +19,15 @@ provider "google" {
   # enable_batching = "false"
 }
 
-provider "kubernetes" {
-  version = "~> 1.10"
-  host = "data.terraform_remote_state.current-project.google_container_cluster_container-cluster_endpoint"
-  insecure = "false"
-  client_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_certificate)"
-  client_key = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_key)"
-  cluster_ca_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)"
-
-}
+#provider "kubernetes" {
+#  version = "~> 1.10"
+#  #host = "data.terraform_remote_state.current-project.google_container_cluster_container-cluster_endpoint"
+#  insecure = "false"
+#  #client_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_certificate)"
+#  #client_key = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_key)"
+#  #cluster_ca_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)"
+#
+#}
 
 
 data "terraform_remote_state" "current-project" {
@@ -323,7 +323,7 @@ resource "kubernetes_deployment" "k8s-deployment" {
     name = "k8s-deployment"
     namespace = "k8s-namespace"
     labels = {
-      app = "${var.application-name}"
+      app = var.application-name
       terraform = "true"
     }
   }
@@ -333,25 +333,25 @@ resource "kubernetes_deployment" "k8s-deployment" {
 
     selector {
       match_labels = {
-        app = "${var.application-name}"
+        app = var.application-name
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "${var.application-name}"
+          app = var.application-name
         }
       }
 
       spec {
         container {
-          image = "${var.application-container-image}"
-          name  = "${var.application-name}"
+          image = var.application-container-image
+          name  = var.application-name
 
           port {
             name = "http-port"
-            container_port = "${var.container-port}"
+            container_port = var.container-port
           }
 
           resources {
@@ -368,7 +368,7 @@ resource "kubernetes_deployment" "k8s-deployment" {
           liveness_probe {
             http_get {
               path = "/"
-              port = "${var.container-port}"
+              port = var.container-port
 
               http_header {
                 name  = "X-Custom-Header"
@@ -403,17 +403,17 @@ resource "kubernetes_service" "k8s-service" {
   }
   spec {
     selector = {
-      app = "${kubernetes_deployment.k8s-deployment.metadata.0.labels.app}"
+      app = kubernetes_deployment.k8s-deployment.metadata.0.labels.app
     }
     session_affinity = "ClientIP"
 
     port {
-      port = "${var.container-port}"
+      port = var.container-port
       target_port = 80
     }
 
     port {
-      port = "${var.container-port}"
+      port = var.container-port
       target_port = 443
     }
 
@@ -439,7 +439,7 @@ resource "kubernetes_ingress" "k8s-ingress" {
   spec {
     backend {
       service_name = "k8s-service"
-      service_port = "${var.container-port}"
+      service_port = var.container-port
     }
 
     rule {
@@ -447,7 +447,7 @@ resource "kubernetes_ingress" "k8s-ingress" {
         path {
           backend {
             service_name = "k8s-service"
-            service_port = "${var.container-port}"
+            service_port = var.container-port
           }
 
           path = "/*"

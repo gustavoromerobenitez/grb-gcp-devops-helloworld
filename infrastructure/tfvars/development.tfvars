@@ -1,3 +1,6 @@
+region="europe-west2"
+zone="europe-west2-a"
+google-provider-version="3.7.0"
 billing-account="0177D8-2B9095-D16093"
 cluster-node-machine-type="n1-standard-1"
 cluster-max-node-count="1"

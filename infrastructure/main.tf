@@ -21,8 +21,6 @@ provider "google" {
 
 provider "kubernetes" {
   version = "~> 1.10"
-  region  = "europe-west2"
-  zone  = "europe-west2-a"
   host = "data.terraform_remote_state.current-project.google_container_cluster_container-cluster_endpoint"
   insecure = "false"
   client_certificate = "base64decode(data.terraform_remote_state.current-project.google_container_cluster_container-cluster_master_auth_0_client_certificate)"

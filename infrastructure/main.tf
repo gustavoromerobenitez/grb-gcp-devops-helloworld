@@ -259,8 +259,9 @@ resource "google_compute_global_address" "global-address" {
 #
 #########################################################
 resource "google_dns_managed_zone" "dns-zone" {
-  name        = "${var.environment}-grb-gcp-devops-com"
-  dns_name    = "${var.environment}.grb-gcp-devops.com."
+  project = local.project-name
+  name = "${var.environment}-grb-gcp-devops-com"
+  dns_name = "${var.environment}.grb-gcp-devops.com."
   description = "${var.environment} DNS zone"
   labels = {
     terraform = "true"
@@ -270,10 +271,11 @@ resource "google_dns_managed_zone" "dns-zone" {
 
 
 resource "google_dns_record_set" "dns-record-set" {
-  name         = "leonteq.${google_dns_managed_zone.dns-zone.dns_name}"
+  project = local.project-name
+  name = "leonteq.${google_dns_managed_zone.dns-zone.dns_name}"
   managed_zone = google_dns_managed_zone.dns-zone.name
-  type         = "A"
-  ttl          = "300"
+  type = "A"
+  ttl = "300"
   rrdatas = [ google_compute_global_address.global-address.address ]
   depends_on = [ google_project.current-project, google_dns_managed_zone.dns-zone, google_compute_global_address.global-address]
 }
@@ -284,7 +286,7 @@ resource "google_dns_record_set" "dns-record-set" {
 
 #########################################################
 #
-# Kuberenetes (Service, Deployment, Service Account)
+# Kubernetes (Service, Deployment, Service Account)
 #
 #########################################################
 # kubernetes_service:

@@ -10,12 +10,6 @@ substitutions:
 
 steps:
 
-# Terraform Validate
-- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
-  dir: 'infrastructure'
-  args:
-  - 'validate'
-    
 # Terraform init
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'infrastructure'
@@ -29,6 +23,7 @@ steps:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
   - "TF_IN_AUTOMATION=true"
+
 
 # Terraform Plan
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'

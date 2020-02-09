@@ -4,7 +4,8 @@
 substitutions:
   _TERRAFORM_VERSION: '0.12.20'
   _TERRAFORM_VERSION_SHA256SUM: '46bd906f8cb9bbb871905ecb23ae7344af8017d214d735fbb6d6c8e0feb20ff3'
-
+  _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
+  _BACKEND_PREFIX: 'terraform/${PROJECT_ID}-${_ENVIRONMENT}/state/'
 steps:
 
 # Terraform init
@@ -13,7 +14,9 @@ steps:
   args:
   - 'init'
   - '-var-file="tfvars/${_ENVIRONMENT}.tfvars"'
-  - '-backend-config=project=${PROJECT_ID}'
+  - '-backend-config=project=${PROJECT_ID}-${_ENVIRONMENT}'
+  - '-backend-config=bucket=${_BACKEND_BUCKET}'
+  - '-backend-config=prefix=${_BACKEND_PREFIX}'
   env:
   - "TF_VAR_project-common-name=${PROJECT_ID}"
   - "TF_VAR_environment=${_ENVIRONMENT}"

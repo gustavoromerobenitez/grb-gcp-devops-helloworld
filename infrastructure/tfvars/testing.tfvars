@@ -1,4 +1,3 @@
-project-common-name = "grb-gcp-devops-helloworld"
 project-name = "${var.project-common-name}-${var.environment}"
 region = "europe-west2"
 zone = "${var.region}-a"

@@ -1,11 +1,8 @@
-project-common-name = "grb-gcp-devops-helloworld"
 project-name = "${var.project-common-name}-${var.environment}"
 region = "europe-west2"
 zone = "${var.region}-a"
 google-provider-version = "3.7.0"
 billing-account = "0177D8-2B9095-D16093"
-remote-state-bucket = "grb-gcp-devops-terraform"
-remote-state-prefix = "terraform/${var.project-name}/state/"
 project-service-account-name = var.project-name
 cluster-node-machine-type = "n1-standard-1"
 cluster-max-node-count = "1"

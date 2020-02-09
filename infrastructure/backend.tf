@@ -6,7 +6,6 @@
 #
 terraform {
   backend "gcs" {
-    bucket  = var.remote-state-bucket
-    prefix  = var.remote-state-prefix
+    
   }
 }

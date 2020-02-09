@@ -15,7 +15,7 @@ provider "google" {
 #}
 
 
-data "terraform_remote_state" var.project-name {
+data "terraform_remote_state" "current-project" {
   backend = "gcs"
   config = {
     bucket = var.remote-state-bucket
@@ -24,7 +24,7 @@ data "terraform_remote_state" var.project-name {
 }
 
 
-resource "google_project" var.project-name {
+resource "google_project" "current-project" {
 
   name = var.project-name
   project_id = var.project-name
@@ -45,7 +45,7 @@ resource "google_project_iam_binding" "project_owner" {
   role = "roles/owner"
   members = [ "serviceAccount:${var.project-service-account-name}@${var.project-name}.iam.gserviceaccount.com" ]
   provisioner "local-exec" { command = "sleep 10" }
-  depends_on = [ "google_project.${var.project-name}", google_project_service.compute-googleapis-com, google_project_service.iam-googleapis-com]
+  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_project_service.iam-googleapis-com]
 }
 
 
@@ -62,7 +62,7 @@ resource "google_project_iam_binding" "project_owner" {
 #    command = "sleep 10"
 #  }
 #
-#  depends_on = [google_project.${var.project-name}, google_project_service.compute-googleapis-com, google_project_service.oslogin-googleapis-com, google_project_service.logging-googleapis-com, google_project_service.monitoring-googleapis-com, google_project_service.iam-googleapis-com, google_project_service.bigquery-json-googleapis-com, google_project_service.sourcerepo-googleapis-com, google_project_service.cloudkms-googleapis-com, google_project_service.storage-api-googleapis-com, #google_project_service.iamcredentials-googleapis-com, google_project_service.cloudresourcemanager-googleapis-com, google_project_service.datacatalog-googleapis-com, google_project_service.bigquerystorage-googleapis-com, google_project_service.pubsub-googleapis-com]
+#  depends_on = [google_project.current-project, google_project_service.compute-googleapis-com, google_project_service.oslogin-googleapis-com, google_project_service.logging-googleapis-com, google_project_service.monitoring-googleapis-com, google_project_service.iam-googleapis-com, google_project_service.bigquery-json-googleapis-com, google_project_service.sourcerepo-googleapis-com, google_project_service.cloudkms-googleapis-com, google_project_service.storage-api-googleapis-com, #google_project_service.iamcredentials-googleapis-com, google_project_service.cloudresourcemanager-googleapis-com, google_project_service.datacatalog-googleapis-com, google_project_service.bigquerystorage-googleapis-com, google_project_service.pubsub-googleapis-com]
 #}
 
 
@@ -109,7 +109,7 @@ resource "google_project_service" "compute-googleapis-com" {
 }
 
 
-resource "google_service_account" "${var.project-service-account-name}" {
+resource "google_service_account" "project-service-account" {
   account_id = var.project-service-account-name
   display_name = var.project-service-account-name
   provisioner "local-exec" {  command = "sleep 10" }
@@ -120,7 +120,7 @@ resource "google_service_account" "${var.project-service-account-name}" {
 
 
 
-#resource "google_storage_bucket" var.project-name {
+#resource "google_storage_bucket" "bucket-name" {
 #
 #  name =
 #  location = var.region
@@ -135,8 +135,9 @@ resource "google_service_account" "${var.project-service-account-name}" {
 
 
 
-resource "google_compute_subnetwork" "${var.project-name}-compute-subnetwork" {
+resource "google_compute_subnetwork" "compute-subnetwork" {
 
+    name = var.compute-subnetwork-name
     ip_cidr_range = var.container-cluster-cidr-range
     network = "default"
     project = var.project-name
@@ -154,14 +155,14 @@ resource "google_compute_subnetwork" "${var.project-name}-compute-subnetwork" {
       }
     ]
 
-    depends_on = [ "google_project.${var.project-name}", google_project_service.compute-googleapis-com ]
+    depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com ]
 }
 
 
 
 
 
-resource "google_container_cluster" var.container-cluster-name {
+resource "google_container_cluster" "container-cluster" {
 
    name = var.container-cluster-name
 
@@ -220,13 +221,13 @@ resource "google_container_cluster" var.container-cluster-name {
    ]
 
    outputs = [ "master_auth.0.client_certificate", "master_auth.0.client_key", "master_auth.0.cluster_ca_certificate", "endpoint", "name", "master_version" ]
-   depends_on = [ "google_project.${var.project-name}", "google_compute_subnetwork.${var.container-cluster-subnetwork-name}"]
+   depends_on = [ google_compute_subnetwork.compute-subnetwork]
 }
+
+
 #
-#
-#
-# resource "google_compute_ssl_certificate" var.ssl_certificate_name {
-#     name = "{{ EXTERNAL_SSL_CERTIFICATE_RESOURCE_NAME }"
+# resource "google_compute_ssl_certificate" "ssl-certificate" {
+#     name = var.ssl-certificate-name
 #     certificate = "file(\"{{ EXTERNAL_SSL_CERTIFICATE_LOCAL_LOCATION }}/{{ EXTERNAL_SSL_CERTIFICATE_PUBLIC_KEY_FILENAME }}\") "
 #     private_key = "file(\"{{ EXTERNAL_SSL_CERTIFICATE_LOCAL_LOCATION }}/{{ EXTERNAL_SSL_CERTIFICATE_PRIVATE_KEY_FILENAME }}\") "
 # }

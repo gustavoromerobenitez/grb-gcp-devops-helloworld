@@ -1,6 +1,6 @@
 variable "project-name" {
   type    = string
-  default = "var.project-common-name-var.environment"
+  default = "${var.project-common-name}-${var.environment}"
   description = "GCP Project Full Name including the environment suffix"
 }
 

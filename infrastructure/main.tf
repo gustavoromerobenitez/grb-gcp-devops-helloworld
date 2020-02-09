@@ -1,6 +1,12 @@
+locals {
+  project-name="${var.project-base-name}-${var.environment}"
+  state-bucket-prefix="${var.remote-state-prefix}/${var.environment}/"
+}
+
+
 provider "google" {
-  version = "3.7.0"
-  project = var.project-name
+  version = var.google-provider-version
+  project = local.project-name
   region  = var.region
 }
 
@@ -19,15 +25,15 @@ data "terraform_remote_state" "current-project" {
   backend = "gcs"
   config = {
     bucket = var.remote-state-bucket
-    prefix = var.remote-state-prefix
+    prefix = local.state-bucket-prefix
   }
 }
 
 
 resource "google_project" "current-project" {
 
-  name = var.project-name
-  project_id = var.project-name
+  name = local.project-name
+  project_id = local.project-name
   billing_account = var.billing-account
   skip_delete = "true"
 
@@ -43,7 +49,7 @@ resource "google_project" "current-project" {
 resource "google_project_iam_binding" "project_owner" {
   project = var.project-name
   role = "roles/owner"
-  members = [ "serviceAccount:${var.project-service-account-name}@${var.project-name}.iam.gserviceaccount.com" ]
+  members = [ "serviceAccount:${var.project-service-account-name}@${local.project-name}.iam.gserviceaccount.com" ]
   provisioner "local-exec" { command = "sleep 10" }
   depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_project_service.iam-googleapis-com]
 }
@@ -68,7 +74,7 @@ resource "google_project_iam_binding" "project_owner" {
 
 
 resource "google_project_service" "iam-googleapis-com" {
-  project = var.project-name
+  project = local.project-name
   service = "iam.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
@@ -77,7 +83,7 @@ resource "google_project_service" "iam-googleapis-com" {
 
 
 resource "google_project_service" "storage-api-googleapis-com" {
-  project = var.project-name
+  project = local.project-name
   service = "storage-api.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
@@ -85,7 +91,7 @@ resource "google_project_service" "storage-api-googleapis-com" {
 }
 
 resource "google_project_service" "container-googleapis-com" {
-  project = var.project-name
+  project = local.project-name
   service = "container.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
@@ -93,7 +99,7 @@ resource "google_project_service" "container-googleapis-com" {
 }
 
 resource "google_project_service" "containerregistry-googleapis-com" {
-  project = var.project-name
+  project = local.project-name
   service = "containerregistry.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
@@ -101,7 +107,7 @@ resource "google_project_service" "containerregistry-googleapis-com" {
 }
 
 resource "google_project_service" "compute-googleapis-com" {
-  project = var.project-name
+  project = local.project-name
   service = "compute.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }

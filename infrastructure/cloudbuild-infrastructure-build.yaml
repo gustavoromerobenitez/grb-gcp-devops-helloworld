@@ -4,8 +4,9 @@
 substitutions:
   _TERRAFORM_VERSION: '0.12.20'
   _TERRAFORM_VERSION_SHA256SUM: '46bd906f8cb9bbb871905ecb23ae7344af8017d214d735fbb6d6c8e0feb20ff3'
+  _PROJECT_BASE_NAME: 'grb-gcp-devops-helloworld'
   _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
-  _BACKEND_PREFIX: 'terraform/${PROJECT_ID}-${_ENVIRONMENT}/state/'
+  _BACKEND_PREFIX: 'terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/state/'
 steps:
 
 # Terraform init
@@ -17,7 +18,7 @@ steps:
   - '-backend-config=bucket=${_BACKEND_BUCKET}'
   - '-backend-config=prefix=${_BACKEND_PREFIX}'
   env:
-  - "TF_VAR_project-common-name=${PROJECT_ID}"
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
 
 # Terraform Plan
@@ -30,7 +31,7 @@ steps:
   - '-detailed-exitcode'
   - '-out=plan.tfplan'
   env:
-  - "TF_VAR_project-common-name=${PROJECT_ID}"
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
 
 # Terraform Show
@@ -41,9 +42,9 @@ steps:
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-no-color'
   - 'plan.tfplan'
-  - '> tf-plan-${PROJECT_ID}-${BUILD_ID}'
+  - '> tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}'
   env:
-  - "TF_VAR_project-common-name=${PROJECT_ID}"
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
 
 # Terraform Apply
@@ -54,5 +55,5 @@ steps:
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-auto-approve'
   env:
-  - "TF_VAR_project-common-name=${PROJECT_ID}"
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"

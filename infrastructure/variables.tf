@@ -1,4 +1,4 @@
-variable "project-common-name" {
+variable "project-base-name" {
   type    = string
   default = "grb-gcp-devops-helloworld"
   description = "GCP Project Common Name without the environment suffix"
@@ -42,12 +42,13 @@ variable "remote-state-bucket" {
 
 variable "remote-state-prefix" {
   type = string
-  default = "terraform/state/"
+  default = "terraform/state"
   description = "The path to the state file within the State Bucket"
 }
 
 variable "project-service-account-name" {
   type = string
+  default = "project-default-sa"
   description = "The short name for the project's default service account, not to be confused with the compute default service account"
 }
 

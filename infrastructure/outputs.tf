@@ -2,9 +2,9 @@ output "google_project_current-project_number" {
   value = google_project.current-project.number
 }
 
-output "google_project_iam_binding_project-owner_etag" {
-  value = google_project_iam_binding.project-owner.etag
-}
+#output "google_project_iam_member_project-owner_etag" {
+#  value = google_project_iam_member.project-owner.etag
+#}
 
 output "google_container_cluster_container-cluster_master_auth_0_client_certificate" {
   value = google_container_cluster.container-cluster.master_auth.0.client_certificate

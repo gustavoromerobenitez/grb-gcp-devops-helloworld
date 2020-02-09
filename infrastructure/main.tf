@@ -1,23 +1,22 @@
 locals {
   project-name="${var.project-base-name}-${var.environment}"
   state-bucket-prefix="${var.remote-state-prefix}/${var.environment}/"
-  google-provider-version="${var.google-provider-version}"
 }
 
 
 provider "google" {
-  version = local.google-provider-version
-  project = local.project-name
-  region  = var.region
+  version = "~> 3.7"
+  region  = "europe-west2"
+  zone  = "europe-west2-a"
 }
 
 #provider "kubernetes" {
 #
-#  host = "data.terraform_remote_state.${var.project-name}.google_container_cluster_var.container-cluster-name_endpoint"
+#  host = "data.terraform_remote_state.${local.project-name}.google_container_cluster_var.container-cluster-name_endpoint"
 #  insecure = "false"
-#  client_certificate = "base64decode(data.terraform_remote_state.${var.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_client_certificate)"
-#  client_key = "base64decode(data.terraform_remote_state.${var.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_client_key)"
-#  cluster_ca_certificate = "base64decode(data.terraform_remote_state.${var.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_cluster_ca_certificate)"
+#  client_certificate = "base64decode(data.terraform_remote_state.${local.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_client_certificate)"
+#  client_key = "base64decode(data.terraform_remote_state.${local.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_client_key)"
+#  cluster_ca_certificate = "base64decode(data.terraform_remote_state.${local.project-name}.google_container_cluster_var.container-cluster-name_master_auth_0_cluster_ca_certificate)"
 #
 #}
 
@@ -117,6 +116,7 @@ resource "google_project_service" "compute-googleapis-com" {
 
 
 resource "google_service_account" "project-service-account" {
+  project = local.project-name
   account_id = var.project-service-account-name
   display_name = var.project-service-account-name
   provisioner "local-exec" {  command = "sleep 10" }
@@ -128,7 +128,7 @@ resource "google_service_account" "project-service-account" {
 
 
 #resource "google_storage_bucket" "bucket-name" {
-#
+#  project = local.project-name
 #  name =
 #  location = var.region
 #  storage_class = "REGIONAL"
@@ -170,6 +170,8 @@ resource "google_compute_subnetwork" "compute-subnetwork" {
 
 
 resource "google_container_cluster" "container-cluster" {
+
+  project = local.project-name
 
    name = var.container-cluster-name
 

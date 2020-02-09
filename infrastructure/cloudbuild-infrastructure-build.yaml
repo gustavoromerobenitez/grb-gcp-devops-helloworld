@@ -14,18 +14,21 @@ steps:
   dir: 'infrastructure'
   args:
   - 'init'
+  - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-backend-config=bucket=${_BACKEND_BUCKET}'
   - '-backend-config=prefix=${_BACKEND_PREFIX}'
   env:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"
 
 # Terraform Plan
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'infrastructure'
   args:
   - 'plan'
+  - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-compact-warnings'
   - '-detailed-exitcode'
@@ -33,12 +36,14 @@ steps:
   env:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"
 
 # Terraform Show
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'infrastructure'
   args:
   - 'show'
+  - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-no-color'
   - 'plan.tfplan'
@@ -46,14 +51,17 @@ steps:
   env:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"
 
 # Terraform Apply
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'infrastructure'
   args:
   - 'apply'
+  - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-auto-approve'
   env:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"

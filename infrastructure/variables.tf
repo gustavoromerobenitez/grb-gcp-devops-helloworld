@@ -9,24 +9,6 @@ variable "environment" {
   description = "The environment this project belongs to"
 }
 
-variable "region" {
-  type    = string
-  default = "europe-west2"
-  description = "The GCP region for the project"
-}
-
-variable "zone" {
-  type = string
-  default = "europe-west2-a"
-  description = "The GCP zone for the compute resources"
-}
-
-variable "google-provider-version" {
-  type = string
-  default = "3.7.0"
-  description = "The Terraform Google Provider version"
-}
-
 variable "billing-account" {
   type = string
   default = "0177D8-2B9095-D16093" # SECRET Should be read from a bucket

@@ -4,7 +4,9 @@
 substitutions:
   _TERRAFORM_VERSION: '0.12.20'
   _TERRAFORM_VERSION_SHA256SUM: '46bd906f8cb9bbb871905ecb23ae7344af8017d214d735fbb6d6c8e0feb20ff3'
-
+  _PROJECT_BASE_NAME: 'grb-gcp-devops-helloworld'
+  _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
+  _BACKEND_PREFIX: 'terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/state/'
 steps:
 
 # Terraform init
@@ -12,47 +14,55 @@ steps:
   dir: 'infrastructure'
   args:
   - 'init'
+  - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-backend-config=bucket=${_BACKEND_BUCKET}'
   - '-backend-config=prefix=${_BACKEND_PREFIX}'
   env:
-  - "TF_VAR_project-name=${PROJECT_ID}"
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"
 
-# Terraform Plan -destroy
+# Terraform Plan
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'infrastructure'
   args:
   - 'plan'
+  - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-destroy'
   - '-compact-warnings'
   - '-detailed-exitcode'
   - '-out=plan.tfplan'
   env:
-  - "TF_VAR_project-name=${PROJECT_ID}"
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"
 
 # Terraform Show
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'infrastructure'
   args:
   - 'show'
+  - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-no-color'
   - 'plan.tfplan'
-  - '> tf-plan-destroy-${PROJECT_ID}-${BUILD_ID}'
+  - '> tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}'
   env:
-  - "TF_VAR_project-name=${PROJECT_ID}"
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"
 
-# Terraform destroy
+# Terraform Apply
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'infrastructure'
   args:
   - 'destroy'
+  - '-input=false'
   - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-auto-approve'
   env:
-  - "TF_VAR_project-name=${PROJECT_ID}"
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"

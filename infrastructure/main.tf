@@ -502,7 +502,7 @@ resource "kubernetes_role_binding" "k8s-role-binding" {
   }
   subject { # Perhaps the automation account building the cluster and deploying the pods needs this role
     kind = "User"
-    name = "${var.automation-service-account}"
+    name = var.automation-service-account
   }
 
   depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, google_service_account.project-service-account]

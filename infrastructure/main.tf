@@ -116,7 +116,7 @@ resource "google_service_account" "project-service-account" {
   account_id = var.project-service-account-name
   display_name = var.project-service-account-name
   provisioner "local-exec" {  command = "sleep 10" }
-  depends_on = [ google_project_iam_binding.project-owner, google_project.current-project ]
+  depends_on = [ google_project_iam_member.project-owner, google_project.current-project ]
 }
 
 

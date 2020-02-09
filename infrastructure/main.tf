@@ -179,7 +179,7 @@ resource "google_container_cluster" "container-cluster" {
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
   name = "default"
-  cluster = google_container_cluster.container-cluster
+  cluster = google_container_cluster.container-cluster.name
   initial_node_count = var.cluster-initial-node-count
 
 

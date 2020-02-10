@@ -23,13 +23,13 @@ This repository contains the Infrastructure-as-Code definition for a containeris
 
 Using cloud-native GCP services has been a main priority. I've tried to create a solid infrastructure as code repository using as many GCP cloud-native technologies as possible. This is the reason why I have chosen CloudBuild over Jenkins and Groovy pipelines.
 
-However instead of using Deployment Manager (Google's IaC Service), I have implemented the infrastructure in Terraform for now.The infrastructure has been defined in Terraform files with the remote state for each built project stored in the orchestrating project.
+However instead of using Deployment Manager (Google's IaC Service), I have implemented the infrastructure in Terraform for now. The infrastructure has been defined in Terraform files with the remote state for each built project stored in a Storage Bucket in GCS in the orchestrating project, with versioning enabled.
 
 There are three environment definitions for the infrastructure (dev,test,and prod) which in turn will be three separate GCP projects.
 
 The application and infrastructure are built from a central orchestrating GCP project using [Google Cloud Build](https://cloud.google.com/cloud-build/docs/build-config?hl=en_GB ). CloudBuild is connected to Github via the [Google Cloud Build App](https://github.com/marketplace/google-cloud-build ) which handles the CloudBuild Triggers. At present builds are kicked off when changes are detected to specific files within the three main directories. In each case the corresponding cloudbuild*.yaml file is executed.
 
-The build process uses many predefined *builders* but also includes a [Community Terraform Cloud Builder](https://github.com/GoogleCloudPlatform/cloud-builders-community/tree/master/terraform ) which has been built for this project using the code in the /builders directory.
+The build process uses many predefined *builders* but also includes a [Community Terraform Cloud Builder](https://github.com/GoogleCloudPlatform/cloud-builders-community/tree/master/terraform ) which has been built in the orchestrating project, using Terraform 0.12.20 and the code in the /builders directory.
 
 
 # Pipelines
@@ -37,6 +37,7 @@ The build process uses many predefined *builders* but also includes a [Community
 Pipelines are defined in cloudbuild*.yaml files are comprised of steps run in "builders" which purpose-specific containers.
 These pipelines are triggered when certain changes are detected on the repository. These rules are specified in CloudBuild Triggers.
 
+The application and Terraform builder have been built beforehand so the infrastructure build can pull them from the Container Registry in the orchestrating project.
 
 # Limitations and Challenges
 

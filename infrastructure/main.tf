@@ -30,7 +30,7 @@ data "terraform_remote_state" "current-project" {
 provider "kubernetes" {
   version = "~> 1.10"
   host = google_container_cluster.container-cluster.endpoint
-  insecure = "true"
+  insecure = "false"
   client_certificate = base64decode(google_container_cluster.container-cluster.master_auth.0.client_certificate)
   client_key = base64decode(google_container_cluster.container-cluster.master_auth.0.client_key)
   cluster_ca_certificate = base64decode(google_container_cluster.container-cluster.master_auth.0.cluster_ca_certificate)
@@ -362,7 +362,7 @@ resource "kubernetes_deployment" "k8s-deployment" {
 
           resources {
             limits {
-              cpu    = "0.5"
+              cpu    = "1"
               memory = "512Mi"
             }
             requests {

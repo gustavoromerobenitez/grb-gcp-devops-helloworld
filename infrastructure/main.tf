@@ -103,6 +103,7 @@ resource "google_service_account" "project-service-account" {
   depends_on = [ google_project.current-project ]
 }
 
+
 resource "google_project_iam_member" "project-owner" {
   project = local.project-name
   role = "roles/owner"
@@ -126,7 +127,7 @@ data "google_compute_default_service_account" "default-compute-sa" {
   depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_project_service.compute-googleapis-com]
 }
 
-resource "google_project_iam_member" "storage-object-viewer" {
+resource "google_project_iam_member" "default-sa-storage-object-viewer-on-orchestrator" {
   project = "grb-gcp-devops"
   role = "roles/storage.objectViewer"
   member = "serviceAccount:${data.google_compute_default_service_account.default-compute-sa.email}"
@@ -134,6 +135,13 @@ resource "google_project_iam_member" "storage-object-viewer" {
   depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_project_service.compute-googleapis-com ]
 }
 
+resource "google_project_iam_member" "project-sa-storage-object-viewer-on-orchestrator" {
+  project = "grb-gcp-devops"
+  role = "roles/storage.objectViewer"
+  member = "serviceAccount:${var.project-service-account-name}@${local.project-name}.iam.gserviceaccount.com"
+  provisioner "local-exec" { command = "sleep 10" }
+  depends_on = [ google_project.current-project, google_project_service.iam-googleapis-com, google_project_service.compute-googleapis-com ]
+}
 
 #########################################################
 #

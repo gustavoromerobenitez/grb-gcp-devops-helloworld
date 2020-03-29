@@ -20,8 +20,8 @@ steps:
   - 'clusters'
   - 'get-credentials'
   - '${_CLUSTER_NAME}'
-  - '--zone ${_ZONE}'
-  
+  - '--zone=${_ZONE}'
+
 
 # Terraform init
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'

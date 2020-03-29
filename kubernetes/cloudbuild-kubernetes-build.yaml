@@ -21,6 +21,7 @@ steps:
   - 'get-credentials'
   - '${_CLUSTER_NAME}'
   - '--zone=${_ZONE}'
+  - '--project=${_PROJECT_BASE_NAME}-${_ENVIRONMENT}'
 
 
 # Terraform init

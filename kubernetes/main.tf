@@ -134,13 +134,15 @@ resource "kubernetes_service" "k8s-service" {
     session_affinity = "ClientIP"
 
     port {
-      port = var.container-port
-      target_port = 80
+      port = 80
+      target_port = var.container-port
+      name = "http-port"
     }
 
     port {
-      port = var.container-port
-      target_port = 443
+      port = 443
+      target_port = var.container-port
+      name = "https-port"
     }
 
     type = "NodePort"

@@ -166,7 +166,7 @@ resource "kubernetes_ingress" "k8s-ingress" {
   spec {
     backend {
       service_name = "k8s-service"
-      service_port = var.container-port
+      service_port = 80
     }
 
     rule {
@@ -174,7 +174,7 @@ resource "kubernetes_ingress" "k8s-ingress" {
         path {
           backend {
             service_name = "k8s-service"
-            service_port = var.container-port
+            service_port = 80
           }
 
           path = "/*"

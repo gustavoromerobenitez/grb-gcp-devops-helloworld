@@ -2,9 +2,9 @@
 #
 #
 substitutions:
-  _TERRAFORM_VERSION: '0.12.20'
-  _TERRAFORM_VERSION_SHA256SUM: '46bd906f8cb9bbb871905ecb23ae7344af8017d214d735fbb6d6c8e0feb20ff3'
-  _PROJECT_BASE_NAME: 'k8s-poc-dev'
+  _TERRAFORM_VERSION: '0.12.24'
+  _TERRAFORM_VERSION_SHA256SUM: '602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11'
+  _PROJECT_BASE_NAME: 'k8s-tf'
   _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
   _CLUSTER_NAME: "k8s-cluster-1"
 
@@ -13,6 +13,7 @@ steps:
 
 # Retrieve Cluster Credentials
 - name: 'gcr.io/cloud-builders/gcloud'
+  dir: 'kubernetes'
   args:
   - 'container'
   - 'clusters'
@@ -51,17 +52,6 @@ steps:
   - "TF_VAR_container-cluster-name=${_CLUSTER_NAME}"
   - "TF_IN_AUTOMATION=true"
 
-# Terraform Show
-- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
-  dir: 'kubernetes'
-  args:
-  - 'show'
-  - '-no-color'
-  - 'plan.tfplan'
-  - '> tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}.txt'
-  env:
-  - "TF_IN_AUTOMATION=true"
-
 # Terraform Apply
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
   dir: 'kubernetes'
@@ -75,9 +65,3 @@ steps:
   - "TF_VAR_environment=${_ENVIRONMENT}"
   - "TF_VAR_container-cluster-name=${_CLUSTER_NAME}"
   - "TF_IN_AUTOMATION=true"
-
-# Does not seem to be able to find the output plain text plan file
-#artifacts:
-#  objects:
-#    location: 'gs://${_BACKEND_BUCKET}/terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/artifacts/'
-#    paths: ['infrastructure/tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}.txt']

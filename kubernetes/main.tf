@@ -73,7 +73,7 @@ resource "kubernetes_deployment" "k8s-deployment" {
 
           env {
             name = "PORT"
-            value = ${var.container-port}
+            value = var.container-port
           }
 
           port {

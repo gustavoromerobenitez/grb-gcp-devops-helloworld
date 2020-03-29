@@ -67,3 +67,9 @@ variable "project-service-account-name" {
   default = "project-default-sa"
   description = "The short name for the project's default service account, not to be confused with the compute default service account"
 }
+
+
+variable "k8s-service-account-name" {
+  type = string
+  description = "The Kubernetes service account name"
+}

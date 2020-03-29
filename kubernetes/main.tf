@@ -24,11 +24,11 @@ data "terraform_remote_state" "current-project" {
 
 provider "kubernetes" {
   version = "~> 1.10"
-  host = data.terraform_remote_state.current-project.google_container_cluster_container-cluster_endpoint
+  host = data.terraform_remote_state.current-project.outputs.google_container_cluster_container-cluster_endpoint
   insecure = "false"
-  client_certificate = base64decode(data.terraform_remote_state.current-project.google_container_cluster.container-cluster.master_auth.0.client_certificate)
-  client_key = base64decode(data.terraform_remote_state.current-project.google_container_cluster.container-cluster.master_auth.0.client_key)
-  cluster_ca_certificate = base64decode(data.terraform_remote_state.current-project.google_container_cluster.container-cluster.master_auth.0.cluster_ca_certificate)
+  client_certificate = base64decode(data.terraform_remote_state.current-project.outputs.google_container_cluster.container-cluster.master_auth.0.client_certificate)
+  client_key = base64decode(data.terraform_remote_state.current-project.outputs.google_container_cluster.container-cluster.master_auth.0.client_key)
+  cluster_ca_certificate = base64decode(data.terraform_remote_state.current-project.outputs.google_container_cluster.container-cluster.master_auth.0.cluster_ca_certificate)
 }
 
 #########################################################
@@ -204,7 +204,7 @@ module "workload-identity" {
   version = "1.0.0"
   # insert the 4 required variables here
   namespace = "default" # Description: Kubernetes namespace of the service account to grant permissions to
-  project = var.project_name
+  project = local.project_name
   roles = [ "roles/owner" ] # List of Roles to assign to the service account
   service_account = var.k8s-service-account-name # Description: Kubernetes service account to grant permissions to
 }

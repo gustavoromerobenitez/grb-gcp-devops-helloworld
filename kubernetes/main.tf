@@ -48,7 +48,7 @@ resource "kubernetes_deployment" "k8s-deployment" {
   }
 
   spec {
-    replicas = 3
+    replicas = 1
 
     selector {
       match_labels = {
@@ -198,18 +198,28 @@ resource "kubernetes_service_account" "k8s-service-account" {
 }
 
 
+# Error required attribute project not set for service account resource
+#module "workload-identity" {
+#  source  = "Brindster/workload-identity/google"
+#  version = "1.0.0"
+#  # insert the 4 required variables here
+#  namespace = "default" # Description: Kubernetes namespace of the service account to grant permissions to
+#  project = local.project-name
+#  roles = [ "roles/owner" ] # List of Roles to assign to the service account
+#  service_account = var.k8s-service-account-name # Description: Kubernetes service account to grant permissions to
+#}
 
-module "workload-identity" {
-  source  = "Brindster/workload-identity/google"
-  version = "1.0.0"
-  # insert the 4 required variables here
-  namespace = "default" # Description: Kubernetes namespace of the service account to grant permissions to
-  project = local.project-name
-  roles = [ "roles/owner" ] # List of Roles to assign to the service account
-  service_account = var.k8s-service-account-name # Description: Kubernetes service account to grant permissions to
+module "kubernetes-engine_workload-identity" {
+  source  = "terraform-google-modules/kubernetes-engine/google//modules/workload-identity"
+  version = "7.3.0"
+  name = var.k8s-service-account-name
+  project_id = local.project-name
+  k8s_sa_name = var.k8s-service-account-name
+  use_existing_k8s_sa = true
+  namespace = "default"
 }
 
-
+# TODO  Assign permissions to the created Google Service Account to allow K8s to access resources
 
 resource "kubernetes_role_binding" "k8s-role-binding" {
   metadata {

@@ -71,6 +71,11 @@ resource "kubernetes_deployment" "k8s-deployment" {
           image = var.application-container-image
           name  = var.application-name
 
+          env {
+            name = "PORT"
+            value = ${var.container-port}
+          }
+
           port {
             name = "http-port"
             container_port = var.container-port

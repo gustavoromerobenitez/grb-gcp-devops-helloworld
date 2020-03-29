@@ -106,7 +106,7 @@ resource "kubernetes_deployment" "k8s-deployment" {
     }# template
   }#spec
 
-  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_service_account.k8s-service-account ]
+  depends_on = [ kubernetes_service_account.k8s-service-account ]
 }
 
 
@@ -142,7 +142,7 @@ resource "kubernetes_service" "k8s-service" {
 
   }#spec
 
-  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_deployment.k8s-deployment ]
+  depends_on = [ kubernetes_deployment.k8s-deployment ]
 }
 
 
@@ -182,7 +182,7 @@ resource "kubernetes_ingress" "k8s-ingress" {
 
   }#spec
 
-  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, kubernetes_service.k8s-service ]
+  depends_on = [ kubernetes_service.k8s-service ]
 
 }# Ingress
 
@@ -204,7 +204,7 @@ module "workload-identity" {
   version = "1.0.0"
   # insert the 4 required variables here
   namespace = "default" # Description: Kubernetes namespace of the service account to grant permissions to
-  project = local.project_name
+  project = local.project-name
   roles = [ "roles/owner" ] # List of Roles to assign to the service account
   service_account = var.k8s-service-account-name # Description: Kubernetes service account to grant permissions to
 }
@@ -226,12 +226,11 @@ resource "kubernetes_role_binding" "k8s-role-binding" {
   }
   subject {
     kind      = "User"
-    name      = google_service_account.project-service-account.email
+    name      = data.terraform_remote_state.current-project.outputs.google_service_account_project-service-account_email
   }
   subject {
     kind = "User"
     name = var.automation-service-account
   }
 
-  depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com, google_container_cluster.container-cluster, google_service_account.project-service-account]
 }

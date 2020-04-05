@@ -40,16 +40,6 @@ steps:
   - "TF_VAR_environment=${_ENVIRONMENT}"
   - "TF_IN_AUTOMATION=true"
 
-# Terraform Show
-- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
-  dir: 'infrastructure'
-  args:
-  - 'show'
-  - '-no-color'
-  - 'plan.tfplan'
-  - '> tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}.txt'
-  env:
-  - "TF_IN_AUTOMATION=true"
 
 # Terraform Apply
 - name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
@@ -63,9 +53,3 @@ steps:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
   - "TF_IN_AUTOMATION=true"
-
-# Does not seem to be able to find the output plain text plan file
-#artifacts:
-#  objects:
-#    location: 'gs://${_BACKEND_BUCKET}/terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/artifacts/'
-#    paths: ['infrastructure/tf-plan-${_PROJECT_BASE_NAME}-${BUILD_ID}.txt']

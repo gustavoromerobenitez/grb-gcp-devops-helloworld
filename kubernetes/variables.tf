@@ -73,3 +73,70 @@ variable "k8s-service-account-name" {
   type = string
   description = "The Kubernetes service account name"
 }
+
+
+variable "container-cluster-cidr-range" {
+  type = string
+  description = "The range of IP addresses assigned to the Container Cluster, in CIDR format"
+}
+
+variable "container-cluster-name" {
+  type = string
+  description = "The GCP Container Cluster name, that is the Managed Compute Instance group that will support the Kubernetes cluster"
+}
+
+variable "container-cluster-subnetwork-name" {
+  type = string
+  description = "The subnetwork that the Container Cluster will be attached to"
+}
+
+variable "container-cluster-pods-secondary-range-name" {
+  type = string
+  description = "The name of the Secondary IP Range that will be used to provide IP addresses to the Pods in the Kubernetes Cluster"
+}
+
+variable "container-cluster-pods-secondary-range-cidr" {
+  type = string
+  description = "The range of IP addresses, in CIDR format, that will be used to provide IP addresses to the Pods in the Kubernetes Cluster"
+}
+
+variable "container-cluster-services-secondary-range-name" {
+  type = string
+  description = "The name of the Secondary IP Range that will be used to provide IP addresses to the Services in the Kubernetes Cluster"
+}
+
+variable "container-cluster-services-secondary-range-cidr" {
+  type = string
+  description = "The range of IP addresses, in CIDR format, that will be used to provide IP addresses to the Services in the Kubernetes Cluster"
+}
+
+
+variable "cluster-node-machine-type" {
+  type = string
+  default = "n1-standard-1"
+  description = "The Compute Instance type to be used for the nodes in the Container Cluster"
+}
+
+variable "cluster-max-node-count" {
+  type = string
+  default = "1"
+  description = "The maximum number of nodes in the Container Cluster (only used if auto-scaling is enabled)"
+}
+
+variable "cluster-min-node-count" {
+  type = string
+  default = "1"
+  description = "The minimum number of nodes in the Container Cluster (only used if auto-scaling is enabled)"
+}
+
+variable "cluster-initial-node-count" {
+  type = string
+  default = "1"
+  description = "The initial number of nodes of the Container Cluster"
+}
+
+variable "cluster-node-disk-size-gb" {
+  type = string
+  default = "10"
+  description = "The size in GB of the Container Cluster Nodes Persisten Disk"
+}

@@ -14,13 +14,13 @@ locals {
 ###############################################################################
 
 
-data "terraform_remote_state" "current-project" {
-  backend = "gcs"
-  config = {
-    bucket = var.remote-state-bucket
-    prefix = local.state-bucket-prefix
-  }
-}
+#data "terraform_remote_state" "current-project" {
+#  backend = "gcs"
+#  config = {
+#    bucket = var.remote-state-bucket
+#    prefix = local.state-bucket-prefix
+#  }
+#}
 
 provider "google" {
   version = ">= 3.15"
@@ -31,11 +31,11 @@ provider "google" {
 
 provider "kubernetes" {
   version = "~> 1.10"
-  host = data.google_container_cluster_container-cluster_endpoint
+  host = google_container_cluster_container-cluster_endpoint
   insecure = "false"
-  client_certificate = base64decode(data.google_container_cluster_container-cluster_master_auth_0_client_certificate)
-  client_key = base64decode(data.google_container_cluster_container-cluster_master_auth_0_client_key)
-  cluster_ca_certificate = base64decode(data.google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)
+  client_certificate = base64decode(google_container_cluster_container-cluster_master_auth_0_client_certificate)
+  client_key = base64decode(google_container_cluster_container-cluster_master_auth_0_client_key)
+  cluster_ca_certificate = base64decode(google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)
 }
 
 resource "google_project_service" "container-googleapis-com" {

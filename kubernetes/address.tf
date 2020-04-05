@@ -8,5 +8,5 @@ resource "google_compute_global_address" "global-address" {
   name = "${var.environment}-global-address"
   description = "External IP address for the ${var.environment} environment Global HTTPS load balancer"
   address_type = "EXTERNAL"
-  depends_on = [ google_project_service.compute-googleapis-com ]
+
 }

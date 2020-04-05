@@ -47,8 +47,8 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.terraform_remote_state.container-cluster.outputs.google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)
 }
 
-resource "google_project_service" "container-googleapis-com" {
-  project = local.project-name
-  service = "container.googleapis.com"
-  disable_dependent_services = "true"
-}
+#resource "google_project_service" "container-googleapis-com" {
+#  project = local.project-name
+#  service = "container.googleapis.com"
+#  disable_dependent_services = "true"
+#}

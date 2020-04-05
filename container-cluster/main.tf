@@ -30,8 +30,8 @@ provider "google" {
 }
 
 
-#resource "google_project_service" "container-googleapis-com" {
-#  project = local.project-name
-#  service = "container.googleapis.com"
-#  disable_dependent_services = "true"
-#}
+resource "google_project_service" "container-googleapis-com" {
+  project = local.project-name
+  service = "container.googleapis.com"
+  disable_dependent_services = "true"
+}

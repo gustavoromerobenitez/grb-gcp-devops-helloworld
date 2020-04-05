@@ -45,26 +45,20 @@ The GCP Free account does not create an Organization which prevents you from cre
 
 The CloudBuild account in the orchestrator project has, by default, limited permissions, and it has been necessary to add additional permissions on the projects that were created by the Orchestrator project.
 
-Eventually I got stuck in a Kubernetes authorization error which has prevented me from deploying the application, or creating any resources within Kubernetes via Terraform.  
+# ToDo
 
-```
-Step #3: Error: serviceaccounts is forbidden: User "system:anonymous" cannot create resource "serviceaccounts" in API group "" in the namespace "default"
-Step #3:
-Step #3:   on main.tf line 476, in resource "kubernetes_service_account" "k8s-service-account":
-Step #3:  476: resource "kubernetes_service_account" "k8s-service-account" {
-Step #3:
-Step #3:
-Step #3:
-Step #3: Error: rolebindings.rbac.authorization.k8s.io is forbidden: User "system:anonymous" cannot create resource "rolebindings" in API group "rbac.authorization.k8s.io" in the namespace "default"
-Step #3:
-Step #3:   on main.tf line 486, in resource "kubernetes_role_binding" "k8s-role-binding":
-Step #3:  486: resource "kubernetes_role_binding" "k8s-role-binding" {
-```
+## DNS
+I registered a domain called grbdevops.net and added CNAMEs but it does not seem to have worked and I haven't been able to troubleshoot this yet.
 
-The above error is caused by lack of credentials by the GCP Service Account which attempts the creation of the resources within Kubernetes.
-It appears that, [as described in this article](https://ahmet.im/blog/authenticating-to-gke-without-gcloud/), there is a workaround which involves breaking the build process in two in order to retrieve the right credentials via a CLI invocation, before attempting to create any Kubernetes resources.
+## Regional Cluster
+The GKE cluster should be changed into regional:
+- https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters
 
-At the time of writing, I ran out of time to attempt the workaround and focused on documenting what I had achieved so far.
+## Private Kubernetes Cluster
+The Kubernetes cluster is not private at the moment. In order to be able to build from CLoudBuild, master_authorized_networks should be configured, and if that does not work, perhaps it would be required to use a Proxy as described in the following article:
 
+https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters
+https://cloud.google.com/solutions/creating-kubernetes-engine-private-clusters-with-net-proxies
 
-Lastly, I also registered a domain grbdevops.net and added CNAMEs as leonteq-dev.grbdevops.net but it does not seem to have worked and I haven't been able to troubleshoot this yet.
+## Terraform Modules
+The GKE cluster creation could be converted into a terraform module

@@ -7,7 +7,7 @@ substitutions:
   _PROJECT_BASE_NAME: 'k8s-tf'
   _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
   _CLUSTER_NAME: "k8s-cluster-1"
-  _ZONE: "europe-west2-a"
+  _REGION: "europe-west6-a"
 
 timeout: '1200s'
 steps:
@@ -20,7 +20,7 @@ steps:
   - 'clusters'
   - 'get-credentials'
   - '${_CLUSTER_NAME}'
-  - '--zone=${_ZONE}'
+  - '--region=${_REGION}'
   - '--project=${_PROJECT_BASE_NAME}-${_ENVIRONMENT}'
 
 

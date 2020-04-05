@@ -6,7 +6,8 @@ substitutions:
   _TERRAFORM_VERSION_SHA256SUM: '602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11'
   _PROJECT_BASE_NAME: 'k8s-tf'
   _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
-
+  _CLUSTER_NAME: "k8s-cluster-1"
+  _REGION: "europe-west6-a"
 
 timeout: '1200s'
 steps:
@@ -23,6 +24,7 @@ steps:
   env:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_VAR_container-cluster-name=${_CLUSTER_NAME}"
   - "TF_IN_AUTOMATION=true"
 
 
@@ -38,6 +40,7 @@ steps:
   env:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_VAR_container-cluster-name=${_CLUSTER_NAME}"
   - "TF_IN_AUTOMATION=true"
 
 
@@ -52,4 +55,5 @@ steps:
   env:
   - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
   - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_VAR_container-cluster-name=${_CLUSTER_NAME}"
   - "TF_IN_AUTOMATION=true"

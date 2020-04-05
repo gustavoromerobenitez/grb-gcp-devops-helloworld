@@ -1,7 +1,7 @@
 locals {
   project-name="${var.project-base-name}-${var.environment}"
   project-state-bucket-prefix="terraform/${local.project-name}/state/"
-  cluster-state-bucket-prefix="terraform/${local.project-name}/state/container-cluster"
+  cluster-state-bucket-prefix="terraform/${local.project-name}/container-cluster/state/"
 }
 
 ###############################################################################

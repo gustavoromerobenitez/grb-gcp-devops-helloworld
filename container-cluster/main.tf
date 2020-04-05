@@ -24,22 +24,14 @@ data "terraform_remote_state" "current-project" {
 
 provider "google" {
   version = ">= 3.15"
-  region  = "europe-west2"
-  zone  = "europe-west2-a"
+  region  = "europe-west6"
+  zone  = "europe-west6-a"
   # enable_batching = "false"
 }
 
-provider "kubernetes" {
-  version = "~> 1.10"
-  host = google_container_cluster.container-cluster.endpoint
-  insecure = "false"
-  client_certificate = base64decode(google_container_cluster.container-cluster.master_auth.0.client_certificate)
-  client_key = base64decode(google_container_cluster.container-cluster.master_auth.0.client_key)
-  cluster_ca_certificate = base64decode(google_container_cluster.container-cluster.master_auth.0.cluster_ca_certificate)
-}
 
-resource "google_project_service" "container-googleapis-com" {
-  project = local.project-name
-  service = "container.googleapis.com"
-  disable_dependent_services = "true"
-}
+#resource "google_project_service" "container-googleapis-com" {
+#  project = local.project-name
+#  service = "container.googleapis.com"
+#  disable_dependent_services = "true"
+#}

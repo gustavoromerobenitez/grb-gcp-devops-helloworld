@@ -13,8 +13,8 @@ locals {
 ###############################################################################
 provider "google" {
   version = ">= 3.15"
-  region  = "europe-west2"
-  zone  = "europe-west2-a"
+  region  = "europe-west6"
+  zone  = "europe-west6-a"
   # enable_batching = "false"
 }
 

@@ -14,13 +14,13 @@ locals {
 ###############################################################################
 
 
-#data "terraform_remote_state" "current-project" {
-#  backend = "gcs"
-#  config = {
-#    bucket = var.remote-state-bucket
-#    prefix = local.state-bucket-prefix
-#  }
-#}
+data "terraform_remote_state" "current-project" {
+  backend = "gcs"
+  config = {
+    bucket = var.remote-state-bucket
+    prefix = local.state-bucket-prefix
+  }
+}
 
 provider "google" {
   version = ">= 3.15"

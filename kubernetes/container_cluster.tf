@@ -38,7 +38,7 @@ resource "google_container_cluster" "container-cluster" {
   }
 
   # TODO Make Private
-  
+
   depends_on = [ google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-subnetwork]
 
 }
@@ -59,7 +59,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
       }
     disk_size_gb = var.cluster-node-disk-size-gb
     machine_type = var.cluster-node-machine-type
-    service_account = google_service_account.project-service-account.email
+    service_account = data.terraform_remote_state.current-project.outputs.google_service_account_project-service-account_email
     oauth_scopes = [ "https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring" ]
   }
 

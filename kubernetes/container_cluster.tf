@@ -37,7 +37,9 @@ resource "google_container_cluster" "container-cluster" {
    }
   }
 
-  depends_on = [ google_project.current-project, google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-subnetwork]
+  # TODO Make Private
+  
+  depends_on = [ google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-subnetwork]
 
 }
 
@@ -71,5 +73,5 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     auto_repair = "true"
   }
 
-  depends_on = [ google_project.current-project, google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-subnetwork]
+  depends_on = [ google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-subnetwork]
 }

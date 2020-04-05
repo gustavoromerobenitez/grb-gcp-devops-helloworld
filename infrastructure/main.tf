@@ -56,13 +56,6 @@ resource "google_project_service" "storage-api-googleapis-com" {
   depends_on = [ google_project.current-project ]
 }
 
-resource "google_project_service" "container-googleapis-com" {
-  project = local.project-name
-  service = "container.googleapis.com"
-  disable_dependent_services = "true"
-  provisioner "local-exec" { command = "sleep 60" }
-  depends_on = [ google_project.current-project ]
-}
 
 resource "google_project_service" "containerregistry-googleapis-com" {
   project = local.project-name
@@ -75,14 +68,6 @@ resource "google_project_service" "containerregistry-googleapis-com" {
 resource "google_project_service" "compute-googleapis-com" {
   project = local.project-name
   service = "compute.googleapis.com"
-  disable_dependent_services = "true"
-  provisioner "local-exec" { command = "sleep 60" }
-  depends_on = [ google_project.current-project ]
-}
-
-resource "google_project_service" "dns-googleapis-com" {
-  project = local.project-name
-  service = "dns.googleapis.com"
   disable_dependent_services = "true"
   provisioner "local-exec" { command = "sleep 60" }
   depends_on = [ google_project.current-project ]

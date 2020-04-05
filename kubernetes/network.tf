@@ -20,7 +20,5 @@ resource "google_compute_subnetwork" "k8s-subnetwork" {
         range_name = var.container-cluster-services-secondary-range-name
         ip_cidr_range = var.container-cluster-services-secondary-range-cidr
       }
-    ]
-
-    depends_on = [ google_project.current-project, google_project_service.compute-googleapis-com ]
+    ]    
 }

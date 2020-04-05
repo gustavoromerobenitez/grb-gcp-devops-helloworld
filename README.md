@@ -45,6 +45,41 @@ The GCP Free account does not create an Organization which prevents you from cre
 
 The CloudBuild account in the orchestrator project has, by default, limited permissions, and it has been necessary to add additional permissions on the projects that were created by the Orchestrator project.
 
+# Troubleshooting
+
+## Importing Resources
+
+### CloudShell:
+```docker run -it --entrypoint /bin/bash gcr.io/grb-gcp-devops/terraform:latest```
+
+### Container:
+```
+git clone https://github.com/gustavoromerobenitez/grb-gcp-devops-helloworld.git
+
+cd grb-gcp-devops-helloworld/infrastructure/
+
+terraform init -input=false -var-file=tfvars/dev.tfvars -backend-config=bucket=grb-gcp-devops-terraform -backend-config=prefix=terraform/k8s-tf-dev/state/
+
+terraform import -var-file=tfvars/dev.tfvars google_project.current-project projects/k8s-tf-dev
+
+var.environment
+  The environment this project belongs to
+  Enter a value: dev
+  
+var.project-base-name
+  GCP Project Common Name without the environment suffix
+  Enter a value: k8s-tf
+  
+google_project.current-project: Importing from ID "projects/k8s-tf-dev"...
+google_project.current-project: Import prepared!
+  Prepared google_project for import
+google_project.current-project: Refreshing state... [id=projects/k8s-tf-dev]
+
+Import successful!
+The resources that were imported are shown above. These resources are now in
+your Terraform state and will henceforth be managed by Terraform.
+```
+
 # ToDo
 
 ## DNS

@@ -31,24 +31,6 @@ variable "automation-service-account" {
   description = "The service account used by the atuomation"
 }
 
-
-variable "application-container-image" {
-  type    = string
-  description = "The full path in the Google Container registry to the container image that contains the application"
-}
-
-variable "container-port" {
-  type    = string
-  description = "The port that the application is listening on within the container"
-}
-
-variable "application-name" {
-  type    = string
-  description = "Friendly name for the application"
-}
-
-
-
 variable "remote-state-bucket" {
   type = string
   default = "grb-gcp-devops-terraform"
@@ -67,13 +49,6 @@ variable "project-service-account-name" {
   default = "project-default-sa"
   description = "The short name for the project's default service account, not to be confused with the compute default service account"
 }
-
-
-variable "k8s-service-account-name" {
-  type = string
-  description = "The Kubernetes service account name"
-}
-
 
 variable "container-cluster-cidr-range" {
   type = string
@@ -109,7 +84,6 @@ variable "container-cluster-services-secondary-range-cidr" {
   type = string
   description = "The range of IP addresses, in CIDR format, that will be used to provide IP addresses to the Services in the Kubernetes Cluster"
 }
-
 
 variable "cluster-node-machine-type" {
   type = string

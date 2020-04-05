@@ -1,0 +1,55 @@
+#
+#
+#
+substitutions:
+  _TERRAFORM_VERSION: '0.12.24'
+  _TERRAFORM_VERSION_SHA256SUM: '602d2529aafdaa0f605c06adb7c72cfb585d8aa19b3f4d8d189b42589e27bf11'
+  _PROJECT_BASE_NAME: 'k8s-tf'
+  _BACKEND_BUCKET: 'grb-gcp-devops-terraform'
+  _ZONE: "europe-west2-a"
+
+timeout: '1200s'
+steps:
+
+# Terraform init
+- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'container-cluster'
+  args:
+  - 'init'
+  - '-input=false'
+  - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
+  - '-backend-config=bucket=${_BACKEND_BUCKET}'
+  - '-backend-config=prefix=terraform/${_PROJECT_BASE_NAME}-${_ENVIRONMENT}/container-cluster/state/'
+  env:
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
+  - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"
+
+
+# Terraform Plan
+- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'container-cluster'
+  args:
+  - 'plan'
+  - '-input=false'
+  - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
+  - '-compact-warnings'
+  - '-out=plan.tfplan'
+  env:
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
+  - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"
+
+
+# Terraform Apply
+- name: 'gcr.io/${PROJECT_ID}/terraform:${_TERRAFORM_VERSION}'
+  dir: 'container-cluster'
+  args:
+  - 'apply'
+  - '-input=false'
+  - '-auto-approve'
+  - 'plan.tfplan'
+  env:
+  - "TF_VAR_project-base-name=${_PROJECT_BASE_NAME}"
+  - "TF_VAR_environment=${_ENVIRONMENT}"
+  - "TF_IN_AUTOMATION=true"

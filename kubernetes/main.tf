@@ -31,11 +31,11 @@ provider "google" {
 
 provider "kubernetes" {
   version = "~> 1.10"
-  host = google_container_cluster_container-cluster_endpoint
+  host = google_container_cluster.container-cluster.endpoint
   insecure = "false"
-  client_certificate = base64decode(google_container_cluster_container-cluster_master_auth_0_client_certificate)
-  client_key = base64decode(google_container_cluster_container-cluster_master_auth_0_client_key)
-  cluster_ca_certificate = base64decode(google_container_cluster_container-cluster_master_auth_0_cluster_ca_certificate)
+  client_certificate = base64decode(google_container_cluster.container-cluster.master_auth.0.client_certificate)
+  client_key = base64decode(google_container_cluster.container-cluster.master_auth.0.client_key)
+  cluster_ca_certificate = base64decode(google_container_cluster.container-cluster.master_auth.0.cluster_ca_certificate)
 }
 
 resource "google_project_service" "container-googleapis-com" {

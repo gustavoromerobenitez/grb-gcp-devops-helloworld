@@ -46,7 +46,6 @@ steps:
   args:
   - 'apply'
   - '-input=false'
-  - '-var-file=tfvars/${_ENVIRONMENT}.tfvars'
   - '-auto-approve'
   - 'plan.tfplan'
   env:

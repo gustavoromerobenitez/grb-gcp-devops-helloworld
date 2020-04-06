@@ -1,0 +1,27 @@
+# [START cloudbuild]
+# Default User-defined Substitution values
+substitutions:
+    _IMAGE_TAG: '0.1' # Default Value
+
+options:
+    substitution_option: 'ALLOW_LOOSE' #Allow the build to succeed despite missing substitution values
+    logging: 'GCS_ONLY' # Disables Stackdriver logging and default to GCS only
+
+images:
+  - 'gcr.io/$PROJECT_ID/k8s-api-proxy:$_IMAGE_TAG' # Makes sure all images produced are pushed to Google Container Registry
+  - 'gcr.io/$PROJECT_ID/k8s-api-proxy:latest' # Makes sure all images produced are pushed to Google Container Registry
+
+steps:
+
+# This step builds the container image.
+- name: 'gcr.io/cloud-builders/docker'
+  dir: 'k8s-api-proxy'
+  args:
+  - 'build'
+  - '-t'
+  - 'eu.gcr.io/$PROJECT_ID/k8s-api-proxy:$_IMAGE_TAG'
+  - '-t'
+  - 'eu.gcr.io/$PROJECT_ID/k8s-api-proxy:latest'
+  - '.'
+
+# [END cloudbuild]

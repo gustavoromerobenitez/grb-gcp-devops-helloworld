@@ -21,3 +21,15 @@ output "google_container_cluster_container-cluster_name" {
 output "google_container_cluster_container-cluster_master_version" {
   value = google_container_cluster.container-cluster.master_version
 }
+
+output "google_container_cluster_container-cluster_peering_name" {
+  value = google_container_cluster.container-cluster.peering_name
+}
+
+output "google_container_cluster_container-cluster_private_endpoint" {
+  value = google_container_cluster.container-cluster.private_endpoint
+}
+
+output "google_container_cluster_container-cluster_public_endpoint" {
+  value = google_container_cluster.container-cluster.public_endpoint
+}

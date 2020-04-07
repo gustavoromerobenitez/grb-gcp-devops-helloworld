@@ -37,7 +37,11 @@ resource "google_container_cluster" "container-cluster" {
    }
   }
 
-  # TODO Make Private
+  # Private CLuster with Access to the Public Endpoint
+  private_cluster_config {
+    enable_private_nodes = true
+    enable_private_endpoint = false
+  }
 
   depends_on = [ google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-subnetwork]
 

@@ -33,14 +33,22 @@ resource "google_container_cluster" "container-cluster" {
    # Cient Certificate is considered a Legacy Authorisation method
    # Disable to avoid errors like: User \"client\" cannot create namespaces/secrets ...
    client_certificate_config {
-     issue_client_certificate = "false"
+     issue_client_certificate = false
    }
   }
 
   # Private CLuster with Access to the Public Endpoint
   private_cluster_config {
     enable_private_nodes = true
-    enable_private_endpoint = false
+    enable_private_endpoint = true
+  }
+
+  # Authorize only the IP of the K8s Proxy VM
+  master_authorized_networks_config {
+    cidr_blocks {
+      cidr_block = "${google_compute_instance.k8s_proxy_vm.network_interface[0].network_ip}/32"
+      display_name = "Proxy-VM-CIDR"
+    }
   }
 
   depends_on = [ google_project_service.container-googleapis-com, google_compute_subnetwork.k8s-subnetwork]

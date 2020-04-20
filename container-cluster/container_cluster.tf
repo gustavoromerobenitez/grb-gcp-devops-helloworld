@@ -15,6 +15,13 @@ resource "google_container_cluster" "container-cluster" {
   remove_default_node_pool = true
   initial_node_count = 1
 
+  enable_shielded_nodes = true
+
+  shielded_instance_config {
+    enabled_secure_boot = true
+    enable_integrity_monitoring = true
+  }
+
   ip_allocation_policy {
    cluster_secondary_range_name = var.container-cluster-pods-secondary-range-name
    services_secondary_range_name = var.container-cluster-services-secondary-range-name

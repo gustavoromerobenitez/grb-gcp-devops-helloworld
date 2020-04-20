@@ -12,8 +12,13 @@ resource "google_compute_instance" "k8s_proxy_vm" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.debian_image.self_link
+      type = "pd-standard"
+      size = "5GB"
     }
   }
+
+  # Used to determine which firewall rules apply
+  tags = [ "proxy-vm"]
 
   network_interface {
     subnetwork = google_compute_subnetwork.k8s-subnetwork.self_link
@@ -22,5 +27,11 @@ resource "google_compute_instance" "k8s_proxy_vm" {
 
   service_account {
     scopes = ["cloud-platform"]
+  }
+
+  shielded_instance_config {
+    enabled_secure_boot = true
+    enable_vtpm = true
+    enable_integrity_monitoring = true
   }
 }
